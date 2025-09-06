@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-
+import Terminal from './components/Terminal.vue';
 
 </script>
 
@@ -11,6 +11,15 @@ import { RouterLink } from 'vue-router';
   <RouterLink to="/MeowOS/conventions">Conventions</RouterLink>
   <br />
   <router-view></router-view>
+  <Terminal></Terminal>
 </template>
 
-<style scoped></style>
+<style>
+*{
+  margin: 0;
+  padding: 0;
+}
+body{
+  overflow: hidden;
+}
+</style>
