@@ -6,9 +6,9 @@ import { RouterLink } from 'vue-router';
 
 <template>
   <h1>home page</h1>
-  <RouterLink to="/todolist">To Do List</RouterLink>
+  <RouterLink to="/MeowOS/todolist">To Do List</RouterLink>
   <br />
-  <RouterLink to="/conventions">Conventions</RouterLink>
+  <RouterLink to="/MeowOS/conventions">Conventions</RouterLink>
   <br />
   <router-view></router-view>
 </template>
