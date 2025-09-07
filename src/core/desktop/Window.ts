@@ -3,7 +3,16 @@ import type { PropType } from 'vue';
 import { system } from '../api/system';
 import type { WindowState } from '../types/system';
 import { eventBus, SystemEvents } from '../services/eventBus';
+// 自动扫描 system-apps 目录下的所有 .vue 组件
+const modules = import.meta.glob('../../system-apps/*/*.vue', { eager: true })
+const appRegistry: Record<string, any> = {}
 
+for (const path in modules) {
+  const mod = modules[path] as any
+  const name = path.split('/').pop()!.replace('.vue', '') // 提取文件名作为组件名
+  appRegistry[name] = mod.default
+}
+console.log(appRegistry)
 export default defineComponent({
   name: 'Window',
   
@@ -57,7 +66,6 @@ export default defineComponent({
       const x = e.clientX - dragOffset.value.x;
       const y = e.clientY - dragOffset.value.y;
 
-      // 更新窗口位置
       Object.assign(props.window.position, { x, y });
     };
 
@@ -83,7 +91,6 @@ export default defineComponent({
       const width = e.clientX - rect.left;
       const height = e.clientY - rect.top;
 
-      // 限制最小尺寸
       props.window.size.width = Math.max(200, width);
       props.window.size.height = Math.max(150, height);
     };
@@ -119,6 +126,7 @@ export default defineComponent({
       startDrag,
       startResize,
       focus,
+      appRegistry, // 暴露给模板
     };
   },
 });

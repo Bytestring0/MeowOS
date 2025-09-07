@@ -3,9 +3,9 @@
   "name": "记事本",
   "description": "简单的笔记应用",
   "version": "1.0.0",
-  "icon": "/icons/notes.png",
+  "icon": "icons/notes.svg",
   "type": "app",
-  "entry": "NotesApp.vue",
+  "entry": "NotesApp",
   "commands": {
     "notes": {
       "description": "打开记事本",

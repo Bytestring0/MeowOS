@@ -24,26 +24,20 @@ class SystemService {
     this.state.apps = this.getDefaultSystemApps();
   }
 
-  private getDefaultSystemApps(): AppManifest[] {
-    return [
-      {
-        id: 'system-notes',
-        name: '记事本',
-        description: '简单的笔记应用',
-        version: '1.0.0',
-        icon: '/icons/notes.svg',
-        type: 'app',
-        entry: 'NotesApp.vue',
-        commands: {
-          notes: {
-            description: '打开记事本',
-            alias: ['note', 'notepad']
-          }
-        }
-      }
-    ];
+private getDefaultSystemApps(): AppManifest[] {
+  // 扫描 system-apps 下所有 manifest.json
+  const modules = import.meta.glob('../../system-apps/*/manifest.json', { eager: true });
+
+  const apps: AppManifest[] = [];
+  for (const path in modules) {
+    const mod: any = modules[path];
+    const manifest: AppManifest = mod.default || mod;
+
+    apps.push(manifest);
   }
 
+  return apps;
+}
   private async loadSettings() {
     const savedSettings = await storage.getSystemSetting('systemSettings');
     if (savedSettings) {

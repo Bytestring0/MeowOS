@@ -72,27 +72,25 @@ export class PluginLoader {
     return true;
   }
 
-  private async loadSystemApps(): Promise<AppManifest[]> {
-    const defaultSystemApps: AppManifest[] = [
-      {
-        id: 'system-notes',
-        name: '记事本',
-        description: '简单的笔记应用',
-        version: '1.0.0',
-        icon: '/icons/notes.svg',
-        type: 'app',
-        entry: 'NotesApp.vue',
-        commands: {
-          notes: {
-            description: '打开记事本',
-            alias: ['note', 'notepad']
-          }
-        }
-      }
-    ];
-    
-    return defaultSystemApps;
+private async loadSystemApps(): Promise<AppManifest[]> {
+  // 匹配所有 system-apps/*/manifest.json
+  const manifestModules = import.meta.glob('/system-apps/*/manifest.json');
+
+  const apps: AppManifest[] = [];
+
+  for (const path in manifestModules) {
+    try {
+      const module: any = await manifestModules[path]();
+      const manifest: AppManifest = module.default || module;
+      apps.push(manifest);
+    } catch (err) {
+      console.error(`Failed to load manifest from ${path}`, err);
+    }
   }
+
+  return apps;
+}
+
 
   private async loadUserApps(): Promise<AppManifest[]> {
     // 用户应用是可选的，如果不存在就返回空数组

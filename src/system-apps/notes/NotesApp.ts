@@ -10,6 +10,7 @@ export default defineComponent({
 
     // 加载保存的内容
     onMounted(async () => {
+      console.log('NotesApp mounted');
       const savedContent = await storage.get(STORAGE_KEY, true);
       if (savedContent) {
         content.value = savedContent;

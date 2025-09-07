@@ -25,7 +25,7 @@
     </div>
     
     <div class="window-content">
-      <component :is="window.component" />
+      <component :is="appRegistry[window.component]" />
     </div>
 
     <div class="resize-handle" @mousedown.stop="startResize"></div>
