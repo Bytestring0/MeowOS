@@ -9,14 +9,14 @@ import NotesApp from '@/system-apps/notes/NotesApp.vue'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/MeowOS',
     name: 'desktop',
     component: Desktop
   },
   {
     // 处理未匹配的路由，重定向到桌面
     path: '/:pathMatch(.*)*',
-    redirect: '/'
+    redirect: '/MeowOS'
   }
 ]
 
