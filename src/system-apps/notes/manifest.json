@@ -1,0 +1,15 @@
+{
+  "id": "system-notes",
+  "name": "记事本",
+  "description": "简单的笔记应用",
+  "version": "1.0.0",
+  "icon": "/icons/notes.png",
+  "type": "app",
+  "entry": "NotesApp.vue",
+  "commands": {
+    "notes": {
+      "description": "打开记事本",
+      "alias": ["note", "notepad"]
+    }
+  }
+}

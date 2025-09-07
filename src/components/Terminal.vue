@@ -1,128 +1,115 @@
-<script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
-
-const commandHistory = ref<string[]>([]);
-const currentCommand = ref('');
-const terminalOutput = ref<Array<{type: 'command' | 'output', content: string}>>([
-  { type: 'output', content: 'Welcome to MeowOS Terminal v1.0.0' },
-  { type: 'output', content: 'Type "help" for available commands.' },
-]);
-const terminalRef = ref<HTMLDivElement>();
-const inputRef = ref<HTMLInputElement>();
-
-const commands = {
-  help: () => 'Available commands: help, clear, echo, date, ls',
-  clear: () => {
-    terminalOutput.value = [];
-    return '';
-  },
-  echo: (args: string[]) => args.join(' '),
-  date: () => new Date().toLocaleString(),
-  ls: () => 'Documents  Downloads  Pictures  Music  Videos',
-};
-
-const executeCommand = async () => {
-  const cmd = currentCommand.value.trim();
-  if (!cmd) return;
-
-  // 记录命令历史
-  commandHistory.value.push(cmd);
-  terminalOutput.value.push({ type: 'command', content: `$ ${cmd}` });
-
-  // 解析命令
-  const [command, ...args] = cmd.split(' ');
-  const output = commands[command as keyof typeof commands]?.(args) || `Command not found: ${command}`;
-  
-  if (output) {
-    terminalOutput.value.push({ type: 'output', content: output });
-  }
-
-  currentCommand.value = '';
-  await nextTick();
-  scrollToBottom();
-};
-
-const scrollToBottom = () => {
-  terminalRef.value?.scrollTo({
-    top: terminalRef.value.scrollHeight,
-    behavior: 'smooth'
-  });
-};
-
-onMounted(() => {
-  inputRef.value?.focus();
-});
-</script>
-
 <template>
-  <div class="terminal" ref="terminalRef" @click="inputRef?.focus()">
-    <div class="terminal-content">
-      <div v-for="(line, index) in terminalOutput" :key="index" 
-           :class="['terminal-line', line.type]">
-        <template v-if="line.type === 'command'">{{ line.content }}</template>
-        <template v-else>{{ line.content }}</template>
+  <div
+    ref="terminalEl"
+    class="terminal"
+    @click="focusInput"
+  >
+    <div class="terminal-history">
+      <div
+        v-for="(entry, index) in history"
+        :key="index"
+        class="history-entry"
+      >
+        <template v-if="entry.command">
+          <div class="command-line">
+            <span class="prompt">$</span>
+            <span class="command">{{ entry.command }}</span>
+          </div>
+        </template>
+        <div
+          class="output"
+          :class="{ error: !entry.success }"
+          v-html="entry.output.replace(/\n/g, '<br>')"
+        ></div>
       </div>
-      <div class="input-line">
-        <span class="prompt">$</span>
-        <input
-          ref="inputRef"
-          v-model="currentCommand"
-          @keyup.enter="executeCommand"
-          type="text"
-          spellcheck="false"
-          autocomplete="off"
-        >
-      </div>
+    </div>
+
+    <div class="command-input">
+      <span class="prompt">$</span>
+      <input
+        ref="inputEl"
+        v-model="commandInput"
+        type="text"
+        @keydown="handleKeyDown"
+        spellcheck="false"
+        autocomplete="off"
+      />
     </div>
   </div>
 </template>
 
+<script lang="ts" src="./Terminal.ts"></script>
+
 <style scoped>
 .terminal {
-  width: 100vw;
-  height: 100vh;
-  background-color: #1e1e1e;
-  color: #ffffff;
-  font-family: 'Consolas', monospace;
-  padding: 1rem;
+  height: 100%;
+  background-color: var(--bg-color-darker);
+  color: var(--text-color);
+  font-family: 'Consolas', 'Monaco', monospace;
+  padding: 10px;
   overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.terminal-content {
   display: flex;
   flex-direction: column;
 }
 
-.terminal-line {
-  margin: 0.2rem 0;
-  white-space: pre-wrap;
-  word-break: break-all;
+.terminal-history {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
-.command {
-  color: #63c5da;
+.history-entry {
+  margin-bottom: 8px;
 }
 
-.input-line {
+.command-line {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
+  padding: 2px 0;
 }
 
 .prompt {
-  color: #50fa7b;
+  color: var(--secondary-color);
+  user-select: none;
 }
 
-input {
+.command {
+  color: var(--text-color);
+}
+
+.output {
+  padding: 2px 0 2px 20px;
+  white-space: pre-wrap;
+  color: var(--text-color-light);
+}
+
+.output.error {
+  color: var(--danger-color);
+}
+
+.command-input {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  align-items: center;
+}
+
+.command-input input {
   flex: 1;
   background: transparent;
   border: none;
-  color: #ffffff;
-  font-family: 'Consolas', monospace;
-  font-size: 1rem;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
   outline: none;
-  caret-color: #ffffff;
+}
+
+:deep(br) {
+  content: '';
+  display: block;
+  margin: 2px 0;
 }
 
 ::-webkit-scrollbar {
@@ -130,15 +117,15 @@ input {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: var(--bg-color-darker);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--border-color);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--border-color-light);
 }
 </style>

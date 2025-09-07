@@ -1,0 +1,56 @@
+:root {
+  /* 主题色 */
+  --primary-color: #4a90e2;
+  --secondary-color: #42b983;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+
+  /* 背景色 */
+  --bg-color: #ffffff;
+  --bg-color-light: #f5f7fa;
+  --bg-color-darker: #e4e7ed;
+
+  /* 文字颜色 */
+  --text-color: #303133;
+  --text-color-light: #606266;
+  --text-color-lighter: #909399;
+
+  /* 边框颜色 */
+  --border-color: #dcdfe6;
+  --border-color-light: #e4e7ed;
+  --border-color-lighter: #ebeef5;
+
+  /* 阴影 */
+  --box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .12);
+
+  /* 窗口相关 */
+  --window-header-height: 32px;
+  --window-min-width: 200px;
+  --window-min-height: 120px;
+
+  /* 动画持续时间 */
+  --animation-duration: 0.3s;
+}
+
+/* 暗黑主题 */
+[data-theme="dark"] {
+  --bg-color: #1e1e1e;
+  --bg-color-light: #2d2d2d;
+  --bg-color-darker: #252525;
+  
+  --text-color: #ffffff;
+  --text-color-light: #e0e0e0;
+  --text-color-lighter: #a0a0a0;
+  
+  --border-color: #333333;
+  --border-color-light: #404040;
+  --border-color-lighter: #4d4d4d;
+  
+  --box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, .3), 0 0 6px rgba(0, 0, 0, .2);
+  --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .3), 0 0 6px rgba(0, 0, 0, .3);
+}
