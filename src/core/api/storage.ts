@@ -88,8 +88,8 @@ class StorageService {
     };
   }
 
-  // 公共API
-  async get(key: string, useIDB = false): Promise<any> {
+  // 公共API - 默认使用IndexedDB确保数据持久化
+  async get(key: string, useIDB = true): Promise<any> {
     if (useIDB) {
       const idb = await this.idb('appData');
       return await idb.get(key);
@@ -97,7 +97,7 @@ class StorageService {
     return this.ls.get(key);
   }
 
-  async set(key: string, value: any, useIDB = false): Promise<void> {
+  async set(key: string, value: any, useIDB = true): Promise<void> {
     if (useIDB) {
       const idb = await this.idb('appData');
       await idb.set(key, value);
@@ -106,7 +106,7 @@ class StorageService {
     }
   }
 
-  async remove(key: string, useIDB = false): Promise<void> {
+  async remove(key: string, useIDB = true): Promise<void> {
     if (useIDB) {
       const idb = await this.idb('appData');
       await idb.remove(key);
@@ -115,7 +115,7 @@ class StorageService {
     }
   }
 
-  async clear(useIDB = false): Promise<void> {
+  async clear(useIDB = true): Promise<void> {
     if (useIDB) {
       const idb = await this.idb('appData');
       await idb.clear();
@@ -133,6 +133,79 @@ class StorageService {
   async setSystemSetting(key: string, value: any): Promise<void> {
     const idb = await this.idb('systemSettings');
     await idb.set(key, value);
+  }
+
+  // 应用设置专用方法
+  async getAppSetting(appId: string, key: string): Promise<any> {
+    const idb = await this.idb('appData');
+    return await idb.get(`${appId}:${key}`);
+  }
+
+  async setAppSetting(appId: string, key: string, value: any): Promise<void> {
+    const idb = await this.idb('appData');
+    await idb.set(`${appId}:${key}`, value);
+  }
+
+  async removeAppSetting(appId: string, key: string): Promise<void> {
+    const idb = await this.idb('appData');
+    await idb.remove(`${appId}:${key}`);
+  }
+
+  async clearAppData(appId: string): Promise<void> {
+    if (!this.db) return;
+    
+    const tx = this.db.transaction(['appData'], 'readwrite');
+    const store = tx.objectStore('appData');
+    const keys = await store.getAllKeys();
+    
+    for (const key of keys) {
+      if (typeof key === 'string' && key.startsWith(`${appId}:`)) {
+        await store.delete(key);
+      }
+    }
+    await tx.done;
+  }
+
+  // 深度合并对象
+  private deepMerge(target: any, source: any): any {
+    if (source === null || source === undefined) return target;
+    if (target === null || target === undefined) return source;
+    
+    if (typeof target !== 'object' || typeof source !== 'object') {
+      return source;
+    }
+    
+    if (Array.isArray(source)) {
+      return source;
+    }
+    
+    const result = { ...target };
+    
+    for (const key in source) {
+      if (source.hasOwnProperty(key)) {
+        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+          result[key] = this.deepMerge(result[key], source[key]);
+        } else {
+          result[key] = source[key];
+        }
+      }
+    }
+    
+    return result;
+  }
+
+  // 安全的合并设置
+  async mergeData(key: string, newData: any, useIDB = true): Promise<void> {
+    const existingData = await this.get(key, useIDB);
+    const mergedData = this.deepMerge(existingData || {}, newData);
+    await this.set(key, mergedData, useIDB);
+  }
+
+  // 安全的应用设置合并
+  async mergeAppSettings(appId: string, newSettings: any): Promise<void> {
+    const existingSettings = await this.getAppSetting(appId, 'settings') || {};
+    const mergedSettings = this.deepMerge(existingSettings, newSettings);
+    await this.setAppSetting(appId, 'settings', mergedSettings);
   }
 }
 

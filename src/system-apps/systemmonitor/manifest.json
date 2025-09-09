@@ -1,0 +1,16 @@
+{
+  "id": "system-monitor",
+  "name": "系统监视器",
+  "description": "查看系统状态和性能",
+  "version": "1.0.0",
+  "icon": "/icons/monitor.svg",
+  "type": "app",
+  "entry": "SystemMonitorApp",
+  "singleInstance": true,
+  "commands": {
+    "monitor": {
+      "description": "打开系统监视器",
+      "alias": ["sysmon", "task"]
+    }
+  }
+}

@@ -6,16 +6,23 @@
   --warning-color: #e6a23c;
   --danger-color: #f56c6c;
   --info-color: #909399;
+  --accent-color: #4a90e2;
+  --accent-color-rgb: 74, 144, 226;
 
   /* 背景色 */
   --bg-color: #ffffff;
   --bg-color-light: #f5f7fa;
   --bg-color-darker: #e4e7ed;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #e4e7ed;
 
   /* 文字颜色 */
   --text-color: #303133;
   --text-color-light: #606266;
   --text-color-lighter: #909399;
+  --text-primary: #303133;
+  --text-secondary: #606266;
 
   /* 边框颜色 */
   --border-color: #dcdfe6;
@@ -31,6 +38,14 @@
   --window-header-height: 32px;
   --window-min-width: 200px;
   --window-min-height: 120px;
+  --window-backdrop-filter: none;
+  --window-bg-alpha: 0.92;
+  --window-bg-rgb: 255, 255, 255;
+
+  /* 任务栏相关 */
+  --taskbar-backdrop-filter: blur(20px) saturate(150%);
+  --taskbar-bg-alpha: 0.85;
+  --taskbar-bg-rgb: 255, 255, 255;
 
   /* 动画持续时间 */
   --animation-duration: 0.3s;
@@ -41,10 +56,15 @@
   --bg-color: #1e1e1e;
   --bg-color-light: #2d2d2d;
   --bg-color-darker: #252525;
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #252525;
   
   --text-color: #ffffff;
   --text-color-light: #e0e0e0;
   --text-color-lighter: #a0a0a0;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
   
   --border-color: #333333;
   --border-color-light: #404040;
@@ -53,4 +73,39 @@
   --box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
   --box-shadow-light: 0 2px 4px rgba(0, 0, 0, .3), 0 0 6px rgba(0, 0, 0, .2);
   --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .3), 0 0 6px rgba(0, 0, 0, .3);
+
+  --window-bg-rgb: 30, 30, 30;
+  --taskbar-bg-rgb: 30, 30, 30;
+}
+
+/* 玻璃主题 */
+[data-theme="glass"] {
+  --bg-color: rgba(255, 255, 255, 0.6);
+  --bg-color-light: rgba(255, 255, 255, 0.8);
+  --bg-color-darker: rgba(255, 255, 255, 0.9);
+  --bg-primary: rgba(255, 255, 255, 0.6);
+  --bg-secondary: rgba(255, 255, 255, 0.8);
+  --bg-tertiary: rgba(255, 255, 255, 0.9);
+  
+  --text-color: #303133;
+  --text-color-light: #606266;
+  --text-color-lighter: #909399;
+  --text-primary: #303133;
+  --text-secondary: #606266;
+  
+  --border-color: rgba(255, 255, 255, 0.2);
+  --border-color-light: rgba(255, 255, 255, 0.3);
+  --border-color-lighter: rgba(255, 255, 255, 0.4);
+  
+  --box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .12);
+
+  --window-backdrop-filter: blur(18px) saturate(180%);
+  --window-bg-alpha: 0.55;
+  --window-bg-rgb: 255, 255, 255;
+  
+  --taskbar-backdrop-filter: blur(30px) saturate(200%);
+  --taskbar-bg-alpha: 0.7;
+  --taskbar-bg-rgb: 255, 255, 255;
 }

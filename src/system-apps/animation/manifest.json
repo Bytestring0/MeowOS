@@ -1,0 +1,10 @@
+{
+  "id": "system-animation",
+  "name": "动画设置",
+  "description": "自定义系统动画效果",
+  "version": "1.0.0",
+  "icon": "/icons/default-app.svg",
+  "type": "app",
+  "entry": "AnimationSettingsApp",
+  "category": "system"
+}

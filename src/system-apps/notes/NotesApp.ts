@@ -6,12 +6,11 @@ export default defineComponent({
   setup() {
     const content = ref('');
     const autoSaveInterval = ref<number>();
-    const STORAGE_KEY = 'notes-content';
+    const APP_ID = 'system-notes';
 
     // 加载保存的内容
     onMounted(async () => {
-      console.log('NotesApp mounted');
-      const savedContent = await storage.get(STORAGE_KEY, true);
+      const savedContent = await storage.getAppSetting(APP_ID, 'content');
       if (savedContent) {
         content.value = savedContent;
       }
@@ -30,9 +29,7 @@ export default defineComponent({
     });
 
     const saveContent = async () => {
-      if (content.value) {
-        await storage.set(STORAGE_KEY, content.value, true);
-      }
+      await storage.setAppSetting(APP_ID, 'content', content.value);
     };
 
     return {

@@ -1,10 +1,18 @@
 @import './theme.css';
 
-/* 全局重置 */
+/* 禁用文本选择 */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 全局禁用用户选择（可通过配置控制） */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: var(--user-select, none);
+  -webkit-user-select: var(--user-select, none);
 }
 
 html, body {
@@ -57,12 +65,6 @@ button:active {
   opacity: 0.8;
 }
 
-/* 禁用文本选择 */
-.no-select {
-  user-select: none;
-  -webkit-user-select: none;
-}
-
 /* 动画持续时间变量 */
 :root {
   --animation-duration-fast: 0.15s;
@@ -89,4 +91,65 @@ button:active {
 .slide-up-enter-from,
 .slide-up-leave-to {
   transform: translateY(100%);
+}
+
+/* 窗口动画 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes scale-down {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+}
+
+@keyframes scale-up {
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 窗口样式增强 */
+.window {
+  animation: var(--window-open-animation, fade-in 0.25s ease);
+}
+
+.window.closing {
+  animation: var(--window-close-animation, fade-out 0.2s ease);
+}
+
+.window.minimizing {
+  animation: var(--window-minimize-animation, scale-down 0.2s ease);
+}
+
+.window.maximizing {
+  animation: var(--window-maximize-animation, scale-up 0.25s ease);
 }

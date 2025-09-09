@@ -1,0 +1,15 @@
+{
+  "id": "system-clock",
+  "name": "时钟",
+  "description": "时钟、定时器和闹钟",
+  "version": "1.0.0",
+  "icon": "/icons/clock.svg",
+  "type": "app",
+  "entry": "ClockApp",
+  "commands": {
+    "clock": {
+      "description": "打开时钟",
+      "alias": ["time"]
+    }
+  }
+}

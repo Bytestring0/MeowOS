@@ -1,18 +1,32 @@
 <template>
-  <div
-    ref="windowRef"
-    class="window"
-    :class="{ maximized: window.isMaximized }"
-    :style="{
-      left: `${window.position.x}px`,
-      top: `${window.position.y}px`,
-      width: `${window.size.width}px`,
-      height: `${window.size.height}px`,
-      zIndex: window.zIndex,
-    }"
-    @mousedown="focus"
+  <Transition 
+    name="window"
+    appear
+    @enter="onWindowEnter"
+    @leave="onWindowLeave"
   >
-    <div class="window-header" @mousedown="startDrag">
+    <div
+      v-show="!window.isHidden && !window.isMinimized"
+      ref="windowRef"
+      class="window"
+      :class="{ 
+        maximized: window.isMaximized,
+        'window-animating': isAnimating
+      }"
+      :style="{
+        left: window.isMaximized ? '0px' : `${window.position.x}px`,
+        top: window.isMaximized ? '0px' : `${window.position.y}px`,
+        width: window.isMaximized ? '100vw' : `${window.size.width}px`,
+        height: window.isMaximized ? 'calc(100vh - 50px)' : `${window.size.height}px`,
+        zIndex: window.zIndex,
+        backdropFilter: 'var(--window-backdrop-filter, none)',
+        background: `rgba(var(--window-bg-rgb, 255, 255, 255), var(--window-bg-alpha, 0.92))`,
+        boxShadow: 'var(--box-shadow)',
+        transition: isAnimating ? `all var(--window-maximize-duration, 300ms) var(--window-maximize-easing, ease-out)` : 'none'
+      }"
+      @mousedown="focus"
+    >
+    <div class="window-header" @mousedown="startDrag" @contextmenu.prevent="handleHeaderContextMenu">
       <div class="window-title">
         <img :src="window.icon" :alt="window.title" class="window-icon" />
         <span>{{ window.title }}</span>
@@ -28,8 +42,17 @@
       <component :is="appRegistry[window.component]" />
     </div>
 
-    <div class="resize-handle" @mousedown.stop="startResize"></div>
-  </div>
+    <!-- 调整大小手柄 -->
+    <div class="resize-handle-se" @mousedown.stop="(e) => startResize(e, 'se')"></div>
+    <div class="resize-handle-s" @mousedown.stop="(e) => startResize(e, 's')"></div>
+    <div class="resize-handle-e" @mousedown.stop="(e) => startResize(e, 'e')"></div>
+    <div class="resize-handle-n" @mousedown.stop="(e) => startResize(e, 'n')"></div>
+    <div class="resize-handle-w" @mousedown.stop="(e) => startResize(e, 'w')"></div>
+    <div class="resize-handle-ne" @mousedown.stop="(e) => startResize(e, 'ne')"></div>
+    <div class="resize-handle-nw" @mousedown.stop="(e) => startResize(e, 'nw')"></div>
+    <div class="resize-handle-sw" @mousedown.stop="(e) => startResize(e, 'sw')"></div>
+    </div>
+  </Transition>
 </template>
 
 <script lang="ts" src="./Window.ts"></script>
@@ -39,10 +62,10 @@
   position: absolute;
   background: var(--bg-color);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: var(--box-shadow);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
@@ -110,7 +133,8 @@
   position: relative;
 }
 
-.resize-handle {
+/* 调整大小手柄 */
+.resize-handle-se {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -119,7 +143,70 @@
   cursor: se-resize;
 }
 
-.resize-handle::after {
+.resize-handle-s {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 4px;
+  cursor: s-resize;
+}
+
+.resize-handle-e {
+  position: absolute;
+  right: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  cursor: e-resize;
+}
+
+.resize-handle-n {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 4px;
+  cursor: n-resize;
+}
+
+.resize-handle-w {
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  cursor: w-resize;
+}
+
+.resize-handle-ne {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  cursor: ne-resize;
+}
+
+.resize-handle-nw {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nw-resize;
+}
+
+.resize-handle-sw {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: sw-resize;
+}
+
+.resize-handle-se::after {
   content: '';
   position: absolute;
   right: 4px;
@@ -128,5 +215,44 @@
   height: 8px;
   border-right: 2px solid var(--border-color);
   border-bottom: 2px solid var(--border-color);
+}
+
+/* 窗口动画 */
+.window-enter-active {
+  animation: window-open var(--window-open-duration, 300ms) var(--window-open-easing, ease-out);
+}
+
+.window-leave-active {
+  animation: window-close var(--window-close-duration, 250ms) var(--window-close-easing, ease-in);
+}
+
+@keyframes window-open {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+    filter: blur(0px);
+  }
+}
+
+@keyframes window-close {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+    filter: blur(2px);
+  }
+}
+
+.window-animating {
+  transition: all var(--window-maximize-duration, 350ms) var(--window-maximize-easing, ease-out);
 }
 </style>

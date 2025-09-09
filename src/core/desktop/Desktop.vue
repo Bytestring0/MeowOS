@@ -1,68 +1,160 @@
 <template>
-  <div class="desktop" :style="{ backgroundImage: `url(${wallpaper})` }">
+  <div 
+    class="desktop" 
+    :style="desktopStyle"
+    @contextmenu.prevent="handleDesktopContextMenu"
+  >
     <div class="desktop-grid" :style="gridStyle">
       <div
-        v-for="app in apps"
+        v-for="app in visibleApps"
         :key="app.id"
         class="desktop-icon"
-        @click="openApp(app.id)"
         @dblclick="openApp(app.id)"
+        @contextmenu.prevent="(e) => handleAppContextMenu(e, app)"
       >
         <img :src="app.icon" :alt="app.name" />
         <span class="app-name">{{ app.name }}</span>
       </div>
     </div>
+    <Taskbar />
   </div>
 </template>
 
-<script lang="ts" src="./Desktop.ts"></script>
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { system } from '../api/system';
+import { showContextMenu } from '../api/contextmenu';
+import type { AppManifest } from '../types/system';
+import Taskbar from './Taskbar.vue';
+
+const apps = computed(() => system.listApps());
+const visibleApps = computed(() => apps.value.filter(a => 
+  !a.hiddenFromDesktop && 
+  (a.showOnDesktop !== false) && 
+  !a.isSystemComponent
+));
+
+const desktopStyle = computed(() => {
+  const wp = system.wallpaper;
+  if (wp.startsWith('linear-gradient') || wp.startsWith('#')) {
+    return { background: wp };
+  }
+  return { backgroundImage: `url(${wp})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+});
+
+const gridStyle = computed(() => ({
+  display: 'grid',
+  gridTemplateColumns: `repeat(auto-fill, 100px)`,
+  gridAutoRows: '100px',
+  gap: '20px',
+  padding: '20px',
+  width: '100%',
+  height: '100%',
+  alignContent: 'flex-start'
+}));
+
+function openApp(id: string) { 
+  system.openApp(id); 
+}
+
+function handleDesktopContextMenu(e: MouseEvent) {
+  showContextMenu({
+    x: e.clientX,
+    y: e.clientY,
+    items: [
+      {
+        label: '刷新',
+        icon: '🔄',
+        action: () => window.location.reload()
+      },
+      { type: 'separator' },
+      {
+        label: '新建',
+        icon: '➕',
+        submenu: [
+          {
+            label: '文件夹',
+            icon: '📁',
+            action: () => console.log('新建文件夹')
+          },
+          {
+            label: '文本文件',
+            icon: '📄',
+            action: () => console.log('新建文件')
+          }
+        ]
+      },
+      { type: 'separator' },
+      {
+        label: '个性化',
+        icon: '🎨',
+        action: () => system.openApp('system-theme')
+      },
+      {
+        label: '壁纸设置',
+        icon: '🖼️',
+        action: () => system.openApp('system-wallpaper')
+      }
+    ]
+  });
+}
+
+function handleAppContextMenu(e: MouseEvent, app: AppManifest) {
+  showContextMenu({
+    x: e.clientX,
+    y: e.clientY,
+    items: [
+      {
+        label: '打开',
+        icon: '📂',
+        action: () => openApp(app.id)
+      },
+      { type: 'separator' },
+      {
+        label: '属性',
+        icon: '⚙️',
+        action: () => console.log('应用属性', app)
+      }
+    ]
+  });
+}
+</script>
 
 <style scoped>
-.desktop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-size: cover;
-  background-position: center;
-  overflow: hidden;
+.desktop { position: fixed; inset:0; overflow:hidden; }
+.desktop-grid { position:relative; }
+.desktop-icon { 
+  width:100px; 
+  text-align:center; 
+  padding:8px; 
+  border-radius:8px; 
+  backdrop-filter: var(--desktop-icon-blur, blur(6px)); 
+  background:rgba(255,255,255,0.08); 
+  color:var(--text-color); 
+  cursor:pointer; 
+  transition: all var(--icon-hover-duration, 200ms) var(--icon-hover-easing, ease-out);
+  transform-origin: center;
 }
-
-.desktop-grid {
-  width: 100%;
-  height: 100%;
-  position: relative;
+.desktop-icon:hover { 
+  background:rgba(255,255,255,0.15); 
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-
-.desktop-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.3s;
+.desktop-icon img { 
+  width:48px; 
+  height:48px; 
+  object-fit:contain; 
+  margin-bottom:6px;
+  transition: all var(--icon-hover-duration, 200ms) var(--icon-hover-easing, ease-out);
 }
-
-.desktop-icon:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.desktop-icon:hover img {
+  transform: scale(1.1);
 }
-
-.desktop-icon img {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
-}
-
-.app-name {
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  font-size: 14px;
-  text-align: center;
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.app-name { 
+  font-size:12px; 
+  white-space:nowrap; 
+  overflow:hidden; 
+  text-overflow:ellipsis; 
+  display:block; 
 }
 </style>

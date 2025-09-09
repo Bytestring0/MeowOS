@@ -1,0 +1,8 @@
+{
+  "name": "deploy",
+  "version": "1.0.0",
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  }
+}
