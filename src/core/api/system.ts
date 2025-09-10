@@ -210,35 +210,50 @@ class SystemService {
   // 获取所有内置壁纸
   async getBuiltinWallpapers() {
     try {
-      // 使用 Vite 的 import.meta.glob 来获取 public/wallpapers 下的所有图片
-      const wallpaperModules = import.meta.glob('/public/wallpapers/*.(jpg|jpeg|png|gif|svg|webp)', { 
-        eager: false,
-        query: 'url'
-      });
+      // 尝试从 public/wallpapers 目录读取壁纸文件
+      const wallpapersPath = '/wallpapers/';
+      const response = await fetch(wallpapersPath);
       
-      const wallpapers = [];
-      
-      for (const [path, importFn] of Object.entries(wallpaperModules)) {
-        // 从路径中提取文件名
-        const filename = path.split('/').pop()!;
-        const name = filename.replace(/\.(jpg|jpeg|png|gif|svg|webp)$/i, '');
-        const displayName = this.formatWallpaperName(name);
+      if (response.ok) {
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const links = doc.querySelectorAll('a[href]');
         
-        wallpapers.push({
-          id: name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
-          name: displayName,
-          value: `/wallpapers/${filename}`, // public 目录下的文件可以直接访问
-          type: 'image'
-        });
+        const wallpapers = [];
+        
+        for (const link of links) {
+          const href = link.getAttribute('href');
+          if (!href || href === '../' || href.startsWith('?') || href.startsWith('#')) continue;
+          
+          const filename = decodeURIComponent(href);
+          if (filename === '.' || filename === '..') continue;
+          
+          // 只处理图片文件
+          if (/\.(jpg|jpeg|png|gif|svg|webp)$/i.test(filename)) {
+            const name = filename.replace(/\.(jpg|jpeg|png|gif|svg|webp)$/i, '');
+            const displayName = this.formatWallpaperName(name);
+            
+            wallpapers.push({
+              id: name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+              name: displayName,
+              value: `wallpapers/${filename}`,
+              type: 'image'
+            });
+          }
+        }
+        
+        // 如果成功读取到文件，返回结果
+        if (wallpapers.length > 0) {
+          return wallpapers;
+        }
       }
-      
-      console.log('Loaded wallpapers using import.meta.glob:', wallpapers);
-      return wallpapers.length > 0 ? wallpapers : this.getDefaultWallpapers();
-      
     } catch (error) {
-      console.warn('Failed to load wallpapers using import.meta.glob:', error);
-      return this.getDefaultWallpapers();
+      console.warn('Failed to load wallpapers from public directory:', error);
     }
+    
+    // 如果无法读取文件，返回默认壁纸列表
+    return this.getDefaultWallpapers();
   }
 
   // 格式化壁纸名称
@@ -269,6 +284,11 @@ class SystemService {
       { id: 'abstract_waves', name: '抽象波浪', value: 'wallpapers/abstract_waves.svg', type: 'image' },
       { id: 'cyberpunk', name: '赛博朋克', value: 'wallpapers/cyberpunk.svg', type: 'image' },
       { id: 'dark_theme', name: '暗夜主题', value: 'wallpapers/dark_theme.svg', type: 'image' },
+      { id: 'lowpoly', name: '低多边形', value: 'wallpapers/lowpoly.svg', type: 'image' },
+      { id: 'geometric_theme', name: '几何主题', value: 'wallpapers/geometric_theme.svg', type: 'image' },
+      { id: 'space_nebula', name: '太空星云', value: 'wallpapers/space_nebula.svg', type: 'image' },
+      { id: 'pastel_circles', name: '粉彩圆圈', value: 'wallpapers/pastel_circles.svg', type: 'image' },
+      { id: 'neon_grid', name: '霓虹网格', value: 'wallpapers/neon_grid.svg', type: 'image' },
     ];
   }
 
