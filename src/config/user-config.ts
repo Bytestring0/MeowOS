@@ -1,6 +1,4 @@
 // 用户自定义配置
-// 基于 user-config.example.ts 的示例
-
 import type { UserConfig } from '@/config/system';
 
 export const userConfig: UserConfig = {

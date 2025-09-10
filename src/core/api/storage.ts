@@ -77,7 +77,9 @@ class StorageService {
         return await this.db!.get(storeName, key);
       },
       set: async (key: string, value: any): Promise<void> => {
-        await this.db!.put(storeName, value, key);
+        console.log(`Setting ${key} in ${storeName}:`, value);
+        const rValue = JSON.parse(JSON.stringify(value));
+        await this.db!.put(storeName, rValue, key);
       },
       remove: async (key: string): Promise<void> => {
         await this.db!.delete(storeName, key);

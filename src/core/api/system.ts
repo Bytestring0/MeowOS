@@ -45,20 +45,6 @@ class SystemService {
 
   private async loadApps() {
     this.state.apps = this.getDefaultSystemApps();
-    // 内置终端作为系统应用
-    if (!this.state.apps.find(a => a.id === 'system-terminal')) {
-      this.state.apps.push({
-        id: 'system-terminal',
-        name: '终端',
-        description: '系统命令行',
-        version: '1.0.0',
-        icon: 'icons/terminal.svg',
-        type: 'app',
-        entry: 'TerminalApp',
-        hiddenFromDesktop: false,
-        singleInstance: true,
-      });
-    }
   }
 
   private getDefaultSystemApps(): AppManifest[] {
@@ -84,6 +70,7 @@ class SystemService {
   private async loadSettings() {
     const savedSettings = await storage.getSystemSetting('systemSettings');
     if (savedSettings) {
+      console.log('Loaded system settings:', savedSettings);
       this.state.theme = savedSettings.theme || 'light';
       this.state.wallpaper = savedSettings.wallpaper || '/wallpapers/default.svg';
       this.state.settings = { ...this.state.settings, ...savedSettings.settings };
@@ -130,7 +117,7 @@ class SystemService {
   get config() { return this.state.config; }
   get theme() { return this.state.theme; }
   get wallpaper() { return this.state.wallpaper; }
-
+  get themes() { console.log(this.state.config.themes);return this.state.config.themes; }
   async openApp(appId: string, options?: Partial<WindowState>): Promise<WindowState | null> {
     const app = this.state.apps.find(a => a.id === appId);
     if (!app) { console.error(`App not found: ${appId}`); return null; }
@@ -183,7 +170,7 @@ class SystemService {
   applyTheme(themeId: string) {
     const theme = this.state.config.themes.find(t => t.id === themeId);
     const root = document.documentElement;
-    
+    console.log('Applying theme:', themeId, theme);
     if (theme) {
       // 重置所有主题相关的属性
       root.removeAttribute('data-theme');
@@ -218,6 +205,78 @@ class SystemService {
 
   toggleMinimize(windowId: string) {
     const w = this.state.windows.find(w => w.id === windowId); if (!w) return; if (w.isMinimized) { this.focusWindow(windowId); } else { this.minimizeWindow(windowId); }
+  }
+
+  // 获取所有内置壁纸
+  async getBuiltinWallpapers() {
+    try {
+      // 使用 Vite 的 import.meta.glob 来获取 public/wallpapers 下的所有图片
+      const wallpaperModules = import.meta.glob('/public/wallpapers/*.(jpg|jpeg|png|gif|svg|webp)', { 
+        eager: false,
+        query: 'url'
+      });
+      
+      const wallpapers = [];
+      
+      for (const [path, importFn] of Object.entries(wallpaperModules)) {
+        // 从路径中提取文件名
+        const filename = path.split('/').pop()!;
+        const name = filename.replace(/\.(jpg|jpeg|png|gif|svg|webp)$/i, '');
+        const displayName = this.formatWallpaperName(name);
+        
+        wallpapers.push({
+          id: name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+          name: displayName,
+          value: `/wallpapers/${filename}`, // public 目录下的文件可以直接访问
+          type: 'image'
+        });
+      }
+      
+      console.log('Loaded wallpapers using import.meta.glob:', wallpapers);
+      return wallpapers.length > 0 ? wallpapers : this.getDefaultWallpapers();
+      
+    } catch (error) {
+      console.warn('Failed to load wallpapers using import.meta.glob:', error);
+      return this.getDefaultWallpapers();
+    }
+  }
+
+  // 格式化壁纸名称
+  private formatWallpaperName(filename: string): string {
+    // 将文件名转换为友好的显示名称
+    const nameMap: Record<string, string> = {
+      'default': '默认',
+      'abstract_waves': '抽象波浪',
+      'cyberpunk': '赛博朋克',
+      'dark_theme': '暗夜主题',
+      'landscape': '自然风光',
+      'space': '星空',
+      'mountain': '群山',
+      'ocean': '海洋',
+      'forest': '森林',
+      'city': '都市',
+      'sunset': '日落',
+      'aurora': '极光'
+    };
+    
+    return nameMap[filename] || filename.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  // 默认壁纸列表（作为备用）
+  private getDefaultWallpapers() {
+    return [
+      { id: 'default', name: '默认', value: 'wallpapers/default.svg', type: 'image' },
+      { id: 'abstract_waves', name: '抽象波浪', value: 'wallpapers/abstract_waves.svg', type: 'image' },
+      { id: 'cyberpunk', name: '赛博朋克', value: 'wallpapers/cyberpunk.svg', type: 'image' },
+      { id: 'dark_theme', name: '暗夜主题', value: 'wallpapers/dark_theme.svg', type: 'image' },
+    ];
+  }
+
+  // 重置壁纸到默认
+  resetWallpaper() {
+    const defaultWallpaper = 'wallpapers/default.svg';
+    this.setWallpaper(defaultWallpaper);
+    return defaultWallpaper;
   }
 }
 

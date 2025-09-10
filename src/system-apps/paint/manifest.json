@@ -3,7 +3,7 @@
   "name": "绘图板",
   "description": "简单的绘图和涂鸦工具",
   "version": "1.0.0",
-  "icon": "/icons/paint.svg",
+  "icon": "icons/paint.svg",
   "type": "app",
   "entry": "PaintApp"
 }

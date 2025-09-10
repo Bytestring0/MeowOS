@@ -3,7 +3,7 @@
   "name": "计算器",
   "description": "科学计算器",
   "version": "1.0.0",
-  "icon": "/icons/calculator.svg",
+  "icon": "icons/default-app.svg",
   "type": "app",
   "entry": "CalculatorApp",
   "commands": {

@@ -67,32 +67,8 @@ export const defaultWallpapers: WallpaperSource[] = [
   {
     id: 'default',
     type: 'builtin',
-    value: '/wallpapers/default.svg',
+    value: '/wallpapers/dark_theme.svg',
     name: '默认壁纸'
-  },
-  {
-    id: 'pure-black',
-    type: 'color',
-    value: '#0f1115',
-    name: '纯黑'
-  },
-  {
-    id: 'pure-white',
-    type: 'color',
-    value: '#ffffff',
-    name: '纯白'
-  },
-  {
-    id: 'gradient-blue',
-    type: 'gradient',
-    value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    name: '蓝色渐变'
-  },
-  {
-    id: 'gradient-sunset',
-    type: 'gradient',
-    value: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
-    name: '日落渐变'
   }
 ];
 

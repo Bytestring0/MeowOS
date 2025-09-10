@@ -3,7 +3,7 @@
   "name": "壁纸设置",
   "description": "桌面壁纸和背景设置",
   "version": "1.0.0",
-  "icon": "/icons/wallpaper.svg",
+  "icon": "icons/wallpaper.svg",
   "type": "app",
   "entry": "WallpaperApp",
   "singleInstance": true

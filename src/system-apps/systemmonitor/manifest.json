@@ -3,7 +3,7 @@
   "name": "系统监视器",
   "description": "查看系统状态和性能",
   "version": "1.0.0",
-  "icon": "/icons/monitor.svg",
+  "icon": "icons/default-app.svg",
   "type": "app",
   "entry": "SystemMonitorApp",
   "singleInstance": true,

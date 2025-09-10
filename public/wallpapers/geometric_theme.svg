@@ -1,0 +1,20 @@
+<!-- Geometric colorful variant - keeps original text element exactly -->
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g3" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffafbd;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffc3a0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2193b0;stop-opacity:1" />
+    </linearGradient>
+    <clipPath id="tri">
+      <polygon points="0,1080 960,0 1920,1080"/>
+    </clipPath>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g3)" />
+  <g clip-path="url(#tri)" opacity="0.18">
+    <rect x="-100" y="200" width="600" height="900" transform="skewX(-18)"/>
+    <rect x="500" y="100" width="700" height="1000" transform="skewX(12)"/>
+    <rect x="1200" y="300" width="900" height="900" transform="skewX(-6)"/>
+  </g>
+  <text x="960" y="540" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" opacity="0.6">MeowOS</text>
+</svg>

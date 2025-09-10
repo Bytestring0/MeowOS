@@ -80,7 +80,7 @@
 
 /* 玻璃主题 */
 [data-theme="glass"] {
-  --bg-color: rgba(255, 255, 255, 0.6);
+  --bg-color: rgba(255, 255, 255, 0.5);
   --bg-color-light: rgba(255, 255, 255, 0.8);
   --bg-color-darker: rgba(255, 255, 255, 0.9);
   --bg-primary: rgba(255, 255, 255, 0.6);
@@ -101,11 +101,30 @@
   --box-shadow-light: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
   --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .12);
 
-  --window-backdrop-filter: blur(18px) saturate(180%);
-  --window-bg-alpha: 0.55;
+  --window-backdrop-filter: blur(4px) saturate(400%);
+  --window-bg-alpha: 0.1;
   --window-bg-rgb: 255, 255, 255;
   
-  --taskbar-backdrop-filter: blur(30px) saturate(200%);
-  --taskbar-bg-alpha: 0.7;
+  --taskbar-backdrop-filter: blur(4px) saturate(200%);
+  --taskbar-bg-alpha: 0.2;
   --taskbar-bg-rgb: 255, 255, 255;
+}
+[data-theme="custom-cyberpunk"]{
+        --primary-color: #00ffff,
+        --secondary-color: #ff00ff,
+        --bg-color: #0a0a0a,
+        --bg-color-light: #1a1a1a,
+        --bg-color-darker: #050505,
+        --text-color: #00ffff,
+        --text-color-light: #00cccc,
+        --text-color-lighter: #009999,
+        --border-color: #003333,
+        --border-color-light: #004444,
+        --border-color-lighter: #005555,
+        --window-bg-rgb: 10, 10, 10,
+        --window-bg-alpha: 0.9,
+        --window-backdrop-filter: blur(10px) saturate(200%),
+        --taskbar-bg-rgb: 10, 10, 10,
+        --taskbar-bg-alpha: 0.9,
+        --taskbar-backdrop-filter: blur(10px) saturate(200%);
 }

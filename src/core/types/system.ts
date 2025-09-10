@@ -7,12 +7,6 @@ export interface AppManifest {
   type: 'app' | 'widget' | 'cli' | 'service';
   entry: string;
   replace?: string;
-  commands?: {
-    [key: string]: {
-      description: string;
-      alias?: string[];
-    };
-  };
   settings?: {
     [key: string]: any;
   };
@@ -59,11 +53,6 @@ export interface SystemState {
   themeEffects?: ThemeDefinition['effects'];
 }
 
-export interface CommandResult {
-  success: boolean;
-  message: string;
-  data?: any;
-}
 
 export interface ThemeDefinition {
   id: string;

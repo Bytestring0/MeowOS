@@ -3,7 +3,7 @@
   "name": "主题设置",
   "description": "系统主题和外观设置",
   "version": "1.0.0",
-  "icon": "/icons/theme.svg",
+  "icon": "icons/theme.svg",
   "type": "app",
   "entry": "ThemeApp",
   "singleInstance": true
