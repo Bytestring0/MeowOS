@@ -1,0 +1,24 @@
+<!-- Space nebula variant -->
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g9" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1f1c2c;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g9)" />
+  <!-- random stars -->
+  <g fill="white" opacity="0.7">
+    <circle cx="200" cy="150" r="1.5"/>
+    <circle cx="600" cy="250" r="2"/>
+    <circle cx="1200" cy="180" r="1.2"/>
+    <circle cx="1700" cy="300" r="1.8"/>
+    <circle cx="800" cy="500" r="1"/>
+    <circle cx="1500" cy="700" r="1.5"/>
+    <circle cx="400" cy="900" r="2"/>
+  </g>
+  <!-- nebula cloud shapes -->
+  <ellipse cx="800" cy="600" rx="300" ry="180" fill="#ff6ec7" opacity="0.2"/>
+  <ellipse cx="1100" cy="500" rx="400" ry="220" fill="#00f0ff" opacity="0.15"/>
+  <text x="960" y="540" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" opacity="0.6">MeowOS</text>
+</svg>
