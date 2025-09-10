@@ -179,7 +179,6 @@ export class EasterEggService {
   }
   
   private replaceTextWithMeow() {
-    // 这里可以实现文本替换逻辑，但要小心不要破坏功能
     console.log('🐱 Cat mode activated! Meow meow!')
   }
   
@@ -307,22 +306,6 @@ export class EasterEggService {
         notification.remove()
       }, 300)
     }, 3000)
-  }
-  
-  // 获取随机猫咪事实
-  getCatFact(): string {
-    const facts = [
-      "Cats spend 70% of their lives sleeping. That's 13-16 hours a day! 😴",
-      "A cat's purr vibrates at a frequency of 25-50 Hz, which can help heal bones! 🔊",
-      "Cats have a third eyelid called a 'nictitating membrane' 👁️",
-      "A group of cats is called a 'clowder' 🐱🐱🐱",
-      "Cats can't taste sweetness - they're missing the sweet taste receptors! 🍭",
-      "Ancient Egyptians worshipped cats and mummified them when they died 🏺",
-      "Cats have over 30 muscles controlling their ears 👂",
-      "The oldest known pet cat existed 9,500 years ago 🏛️"
-    ]
-    
-    return facts[Math.floor(Math.random() * facts.length)]
   }
 }
 
