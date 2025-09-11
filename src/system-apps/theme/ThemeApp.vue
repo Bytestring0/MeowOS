@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { system } from '../../core/api/system';
+import { animationService } from '@/core/api/animationService';
 
 // 动态获取所有可用主题（包括系统默认主题和用户自定义主题）
 const themes = computed(() => system.themes.map(theme => ({
@@ -111,10 +112,8 @@ const animationSpeed = ref('normal');
 
 onMounted(() => {
   // 根据当前动画持续时间设置速度
-  const duration = system.config.windowAnimations.open;
-  if (duration.includes('0.15')) animationSpeed.value = 'fast';
-  else if (duration.includes('0.5')) animationSpeed.value = 'slow';
-  else animationSpeed.value = 'normal';
+  const duration = 1;
+
 });
 
 function selectTheme(themeId: string) {
@@ -157,14 +156,6 @@ function updateAnimationSpeed() {
   
   // 更新系统动画配置
   const easing = 'cubic-bezier(0.25, 0.8, 0.25, 1)';
-  system.config.windowAnimations = {
-    open: `fade-in ${duration} ${easing}`,
-    close: `fade-out ${duration} ${easing}`,
-    minimize: `scale-down ${duration} ${easing}`,
-    maximize: `scale-up ${duration} ${easing}`,
-    restore: `scale-up ${duration} ${easing}`
-  };
-  
   // 更新CSS变量
   document.documentElement.style.setProperty('--animation-duration', duration);
 }
