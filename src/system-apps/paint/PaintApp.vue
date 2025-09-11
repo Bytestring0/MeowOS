@@ -49,16 +49,16 @@
 
       <div class="tool-group">
         <button @click="clearCanvas" class="action-btn" title="清空画布">
-          🗑️ 清空
+          清空
         </button>
         <button @click="saveImage" class="action-btn" title="保存图片">
-          💾 保存
+          保存
         </button>
         <button @click="undo" class="action-btn" title="撤销" :disabled="!canUndo">
-          ↶ 撤销
+          撤销
         </button>
         <button @click="redo" class="action-btn" title="重做" :disabled="!canRedo">
-          ↷ 重做
+          重做
         </button>
       </div>
     </div>

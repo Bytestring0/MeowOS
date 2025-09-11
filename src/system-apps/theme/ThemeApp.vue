@@ -3,6 +3,10 @@
     <div class="theme-header">
       <h2>主题设置</h2>
       <p>选择您喜欢的主题外观</p>
+      <div class="config-info">
+        <span class="info-badge">💡 提示</span>
+        <span>您可以在 <code>src/config/user-config.ts</code> 文件中添加自定义主题</span>
+      </div>
     </div>
     
     <div class="theme-content">
@@ -16,7 +20,7 @@
             :class="{ active: currentTheme === theme.id }"
             @click="selectTheme(theme.id)"
           >
-            <div class="theme-preview" :class="`theme-${theme.id}`">
+            <div class="theme-preview" :style="getThemePreviewStyle(theme.id)">
               <div class="preview-header"></div>
               <div class="preview-content">
                 <div class="preview-sidebar"></div>
@@ -81,23 +85,24 @@
 import { ref, computed, onMounted } from 'vue';
 import { system } from '../../core/api/system';
 
-const themes = [
-  {
-    id: 'light',
-    name: '默认主题',
-    description: '清新明亮的浅色主题'
-  },
-  {
-    id: 'dark',
-    name: '深色主题',
-    description: '护眼的深色界面'
-  },
-  {
-    id: 'glass',
-    name: '毛玻璃主题',
-    description: '半透明的现代玻璃效果'
-  }
-];
+// 动态获取所有可用主题（包括系统默认主题和用户自定义主题）
+const themes = computed(() => system.themes.map(theme => ({
+  id: theme.id,
+  name: theme.name,
+  description: getThemeDescription(theme.id)
+})));
+
+function getThemeDescription(themeId: string): string {
+  const descriptions: Record<string, string> = {
+    light: '清新明亮的浅色主题',
+    dark: '护眼的深色界面',
+    glass: '半透明的现代玻璃效果',
+    'custom-blue': '专业的深蓝色商务主题',
+    cyberpunk: '未来科技感的霓虹主题',
+    pink: '温柔浪漫的粉色主题'
+  };
+  return descriptions[themeId] || '自定义主题';
+}
 
 const currentTheme = computed(() => system.theme);
 const enableShadow = ref(system.config.enableWindowShadow);
@@ -115,8 +120,9 @@ onMounted(() => {
 function selectTheme(themeId: string) {
   system.setTheme(themeId);
   
-  // 如果选择毛玻璃主题，自动开启毛玻璃效果
-  if (themeId === 'glass') {
+  // 根据主题特性自动调整效果
+  const theme = system.themes.find(t => t.id === themeId);
+  if (theme?.effects?.windowBlur) {
     enableGlass.value = true;
     updateGlass();
   }
@@ -149,17 +155,32 @@ function updateAnimationSpeed() {
   
   const duration = speeds[animationSpeed.value as keyof typeof speeds];
   
-  // 更新所有动画持续时间
+  // 更新系统动画配置
+  const easing = 'cubic-bezier(0.25, 0.8, 0.25, 1)';
   system.config.windowAnimations = {
-    open: `fade-in ${duration} ease`,
-    close: `fade-out ${duration} ease`,
-    minimize: `scale-down ${duration} ease`,
-    maximize: `scale-up ${duration} ease`,
-    restore: `scale-up ${duration} ease`
+    open: `fade-in ${duration} ${easing}`,
+    close: `fade-out ${duration} ${easing}`,
+    minimize: `scale-down ${duration} ${easing}`,
+    maximize: `scale-up ${duration} ${easing}`,
+    restore: `scale-up ${duration} ${easing}`
   };
   
-  // 应用到CSS变量
+  // 更新CSS变量
   document.documentElement.style.setProperty('--animation-duration', duration);
+}
+
+function getThemePreviewStyle(themeId: string) {
+  const theme = system.themes.find(t => t.id === themeId);
+  if (!theme) return {};
+  
+  const vars = theme.variables;
+  return {
+    '--preview-bg': vars['--bg-color'] || '#ffffff',
+    '--preview-bg-light': vars['--bg-color-light'] || '#f5f7fa',
+    '--preview-primary': vars['--primary-color'] || '#4a90e2',
+    '--preview-text': vars['--text-color'] || '#303133',
+    '--preview-border': vars['--border-color'] || '#dcdfe6'
+  };
 }
 </script>
 
@@ -186,6 +207,39 @@ function updateAnimationSpeed() {
 .theme-header p {
   color: var(--text-color-light);
   font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.config-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-color-light);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-color-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.info-badge {
+  padding: 2px 6px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.config-info code {
+  background: var(--bg-color-darker);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--primary-color);
 }
 
 .theme-content {
@@ -234,25 +288,15 @@ function updateAnimationSpeed() {
   height: 120px;
   position: relative;
   overflow: hidden;
-}
-
-.theme-light {
-  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-}
-
-.theme-dark {
-  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-}
-
-.theme-glass {
-  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%);
-  backdrop-filter: blur(10px);
+  background: var(--preview-bg, #ffffff);
+  border-bottom: 1px solid var(--preview-border, #dcdfe6);
 }
 
 .preview-header {
   height: 24px;
-  background: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--preview-primary, #4a90e2);
+  opacity: 0.8;
+  border-bottom: 1px solid var(--preview-border, #dcdfe6);
 }
 
 .preview-content {
@@ -260,18 +304,34 @@ function updateAnimationSpeed() {
   height: 96px;
   padding: 8px;
   gap: 8px;
+  background: var(--preview-bg-light, #f5f7fa);
 }
 
 .preview-sidebar {
   width: 60px;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--preview-primary, #4a90e2);
+  opacity: 0.6;
   border-radius: 4px;
 }
 
 .preview-main {
   flex: 1;
-  background: rgba(0, 0, 0, 0.03);
+  background: var(--preview-bg, #ffffff);
+  border: 1px solid var(--preview-border, #dcdfe6);
   border-radius: 4px;
+  position: relative;
+}
+
+.preview-main::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  background: var(--preview-primary, #4a90e2);
+  opacity: 0.3;
+  border-radius: 2px;
 }
 
 .theme-info {

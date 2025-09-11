@@ -3,11 +3,11 @@
     <div class="terminal-header">
       <span class="terminal-title">MeowOS Terminal</span>
       <div class="terminal-controls">
-        <button @click="clearTerminal" class="control-btn">清空</button>
+        <button @click="terminal.clearTerminal()" class="control-btn">清空</button>
       </div>
     </div>
     <div class="terminal-output" ref="outputRef">
-      <div v-for="(line, index) in output" :key="index" class="output-line" :class="line.type">
+      <div v-for="(line, index) in terminal.state.output" :key="index" class="output-line" :class="line.type">
         <span class="prompt" v-if="line.type === 'command'">meow@os:~$ </span>
         <span class="text">{{ line.text }}</span>
       </div>
@@ -16,10 +16,10 @@
       <span class="prompt">meow@os:~$ </span>
       <input
         ref="inputRef"
-        v-model="currentInput"
-        @keydown="handleKeydown"
+        v-model="terminal.state.currentInput"
+        @keydown="terminal.handleKeydown"
         class="input-field"
-        placeholder="输入命令..."
+        placeholder="输入命令... (Tab补全, ↑↓历史记录, Ctrl+C取消)"
         autocomplete="off"
       />
     </div>
@@ -27,96 +27,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue';
+import { ref, nextTick, onMounted, watch } from 'vue';
 import { TerminalApp } from './TerminalApp';
 
-interface OutputLine {
-  text: string;
-  type: 'command' | 'output' | 'error';
-}
-
 const terminal = new TerminalApp();
-const output = ref<OutputLine[]>([
-  { text: '欢迎使用 MeowOS Terminal!', type: 'output' },
-  { text: '输入 "help" 查看可用命令', type: 'output' },
-  { text: '', type: 'output' }
-]);
-
-const currentInput = ref('');
 const inputRef = ref<HTMLInputElement>();
 const outputRef = ref<HTMLDivElement>();
-const commandHistory = ref<string[]>([]);
-const historyIndex = ref(-1);
 
-onMounted(() => {
+onMounted(async () => {
+  await terminal.initialize();
   inputRef.value?.focus();
 });
 
-function handleKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter') {
-    executeCommand();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    navigateHistory(-1);
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    navigateHistory(1);
-  }
-}
-
-function executeCommand() {
-  const command = currentInput.value.trim();
-  if (!command) return;
-
-  // 添加命令到输出
-  output.value.push({ text: command, type: 'command' });
-  
-  // 添加到历史记录
-  commandHistory.value.push(command);
-  historyIndex.value = commandHistory.value.length;
-
-  // 执行命令
-  try {
-    const result = terminal.executeCommand(command);
-    
-    if (result === 'CLEAR_TERMINAL') {
-      output.value = [];
-    } else {
-      output.value.push({ text: result, type: 'output' });
-    }
-  } catch (error) {
-    output.value.push({ 
-      text: `错误: ${error instanceof Error ? error.message : String(error)}`, 
-      type: 'error' 
-    });
-  }
-
-  // 清空输入
-  currentInput.value = '';
-  
-  // 滚动到底部
+// 监听输出变化，自动滚动到底部
+watch(() => terminal.state.output.length, () => {
   nextTick(() => {
     if (outputRef.value) {
       outputRef.value.scrollTop = outputRef.value.scrollHeight;
     }
   });
-}
-
-function navigateHistory(direction: number) {
-  const newIndex = historyIndex.value + direction;
-  
-  if (newIndex >= 0 && newIndex < commandHistory.value.length) {
-    historyIndex.value = newIndex;
-    currentInput.value = commandHistory.value[newIndex];
-  } else if (newIndex >= commandHistory.value.length) {
-    historyIndex.value = commandHistory.value.length;
-    currentInput.value = '';
-  }
-}
-
-function clearTerminal() {
-  output.value = [];
-}
+});
 </script>
 
 <style scoped>
@@ -176,14 +106,19 @@ function clearTerminal() {
 .output-line {
   margin-bottom: 2px;
   word-wrap: break-word;
+  white-space: pre-wrap; /* 保持格式化文本的空格和换行 */
 }
 
 .output-line.command {
   color: var(--primary-color);
+  font-weight: 600;
 }
 
 .output-line.error {
   color: var(--danger-color);
+  background: rgba(var(--danger-color-rgb, 220, 53, 69), 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .output-line.output {

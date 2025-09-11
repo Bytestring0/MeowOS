@@ -12,6 +12,7 @@ import { storage } from './storage';
 import { eventBus, SystemEvents } from '../services/eventBus';
 import { defaultSystemConfig, mergeUserConfig } from '../../config/system';
 import type { UserConfig } from '../../config/system';
+import { userConfig } from '../../config/user-config';
 
 class SystemService {
   private state = reactive<SystemState>({
@@ -34,8 +35,19 @@ class SystemService {
 
   private async init() {
     if (this.initialized) return;
+    
+    // 加载用户配置
+    this.userConfig = userConfig;
+    this.state.config = mergeUserConfig(userConfig);
+    
     await this.loadSettings();
     await this.loadApps();
+    
+    // 应用用户配置的默认主题
+    if (userConfig.defaultTheme) {
+      this.state.theme = userConfig.defaultTheme;
+    }
+    
     this.initialized = true;
   }
 

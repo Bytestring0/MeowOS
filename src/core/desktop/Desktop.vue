@@ -1,7 +1,9 @@
 <template>
   <div 
-    class="desktop" 
+    class="desktop no-select" 
     :style="desktopStyle"
+    @contextmenu="handleDesktopContextMenu"
+    @click="clearSelection"
   >
     <div class="desktop-grid" :style="gridStyle">
       <div
@@ -9,26 +11,28 @@
         :key="app.id"
         class="desktop-icon"
         @dblclick="openApp(app.id)"
+        @contextmenu.stop="handleAppContextMenu($event, app)"
       >
         <img :src="app.icon" :alt="app.name" />
         <span class="app-name">{{ app.name }}</span>
       </div>
     </div>
     <Taskbar />
+    <ContextMenu />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed , ref } from 'vue';
 import { system } from '../api/system';
-import { showContextMenu } from '../api/contextmenu';
+import { showContextMenu, contextMenuAPI } from '../api/contextmenu';
 import type { AppManifest } from '../types/system';
 import Taskbar from './Taskbar.vue';
+import ContextMenu from './ContextMenu.vue';
 
 const apps = computed(() => system.listApps());
 const gridSize = ref({ columns: 10, rows: 1 });
 const visibleApps = computed(() => apps.value.filter(a => 
-
   (a.showOnDesktop !== false) && 
   !a.isSystemComponent
 ));
@@ -56,6 +60,67 @@ function openApp(id: string) {
   system.openApp(id); 
 }
 
+// 桌面右键菜单
+function handleDesktopContextMenu(event: MouseEvent) {
+  event.preventDefault();
+  
+  const menuItems = contextMenuAPI.createDesktopContextMenu({
+    onRefresh: () => {
+      // 刷新桌面
+      console.log('刷新桌面');
+    },
+    onPersonalize: () => {
+      // 打开个性化设置
+      system.openApp('system-theme');
+    },
+    onDisplaySettings: () => {
+      // 打开显示设置
+      system.openApp('system-wallpaper');
+    },
+    onSystemInfo: () => {
+      // 打开系统信息
+      console.log('系统信息');
+    }
+  });
+  
+  showContextMenu({
+    x: event.clientX,
+    y: event.clientY,
+    items: menuItems
+  });
+}
+
+// 应用右键菜单
+function handleAppContextMenu(event: MouseEvent, app: AppManifest) {
+  event.preventDefault();
+  
+  showContextMenu({
+    x: event.clientX,
+    y: event.clientY,
+    items: [
+      {
+        label: '打开',
+        icon: '🚀',
+        action: () => openApp(app.id)
+      },
+      { type: 'separator' },
+      {
+        label: '属性',
+        icon: '⚙️',
+        action: () => {
+          console.log('应用属性:', app);
+        }
+      }
+    ]
+  });
+}
+
+// 清除选择
+function clearSelection() {
+  // 取消所有选中状态，这里可以扩展
+  console.log('清除选择');
+}
+
 </script>
 
 <style scoped>
@@ -67,7 +132,7 @@ function openApp(id: string) {
   padding:8px; 
   border-radius:8px; 
   backdrop-filter: var(--desktop-icon-blur, blur(6px)); 
-  background:rgba(179, 174, 174, 0.05); 
+  background:rgba(179, 174, 174, 0.01); 
   color:var(--text-color); 
   cursor:pointer; 
   transition: all var(--icon-hover-duration, 200ms) var(--icon-hover-easing, ease-out);

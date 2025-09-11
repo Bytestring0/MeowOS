@@ -24,7 +24,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="app" :data-theme="system.theme">
+  <div class="app no-select" :data-theme="system.theme">
     <Desktop />
     <Window v-for="w in windows" :key="w.id" :window="w" />
   </div>
@@ -32,5 +32,42 @@ onMounted(async () => {
 
 <style>
 :root { @import '@/assets/styles/theme.css'; }
-.app { width:100vw; height:100vh; position:relative; }
+.app { 
+  width:100vw; 
+  height:100vh; 
+  position:relative; 
+  user-select: none; /* 禁用用户选择 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 全局禁用文本选择蓝色高亮 */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+*::selection {
+  background: transparent;
+}
+
+*::-moz-selection {
+  background: transparent;
+}
+
+/* 允许在输入框中选择文本 */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+input::selection, textarea::selection, [contenteditable="true"]::selection {
+  background: var(--primary-color, #4a90e2);
+  color: white;
+}
 </style>
