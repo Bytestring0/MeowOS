@@ -8,14 +8,12 @@ export default defineComponent({
     const autoSaveInterval = ref<number>();
     const APP_ID = 'system-notes';
 
-    // 加载保存的内容
     onMounted(async () => {
       const savedContent = await storage.getAppSetting(APP_ID, 'content');
       if (savedContent) {
         content.value = savedContent;
       }
 
-      // 每30秒自动保存
       autoSaveInterval.value = window.setInterval(async () => {
         await saveContent();
       }, 30000);

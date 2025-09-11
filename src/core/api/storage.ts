@@ -168,47 +168,7 @@ class StorageService {
     await tx.done;
   }
 
-  // 深度合并对象
-  private deepMerge(target: any, source: any): any {
-    if (source === null || source === undefined) return target;
-    if (target === null || target === undefined) return source;
-    
-    if (typeof target !== 'object' || typeof source !== 'object') {
-      return source;
-    }
-    
-    if (Array.isArray(source)) {
-      return source;
-    }
-    
-    const result = { ...target };
-    
-    for (const key in source) {
-      if (source.hasOwnProperty(key)) {
-        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-          result[key] = this.deepMerge(result[key], source[key]);
-        } else {
-          result[key] = source[key];
-        }
-      }
-    }
-    
-    return result;
-  }
 
-  // 安全的合并设置
-  async mergeData(key: string, newData: any, useIDB = true): Promise<void> {
-    const existingData = await this.get(key, useIDB);
-    const mergedData = this.deepMerge(existingData || {}, newData);
-    await this.set(key, mergedData, useIDB);
-  }
-
-  // 安全的应用设置合并
-  async mergeAppSettings(appId: string, newSettings: any): Promise<void> {
-    const existingSettings = await this.getAppSetting(appId, 'settings') || {};
-    const mergedSettings = this.deepMerge(existingSettings, newSettings);
-    await this.setAppSetting(appId, 'settings', mergedSettings);
-  }
 }
 
 export const storage = new StorageService();

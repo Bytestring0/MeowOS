@@ -2,7 +2,6 @@
   <div 
     class="desktop" 
     :style="desktopStyle"
-    @contextmenu.prevent="handleDesktopContextMenu"
   >
     <div class="desktop-grid" :style="gridStyle">
       <div
@@ -10,7 +9,6 @@
         :key="app.id"
         class="desktop-icon"
         @dblclick="openApp(app.id)"
-        @contextmenu.prevent="(e) => handleAppContextMenu(e, app)"
       >
         <img :src="app.icon" :alt="app.name" />
         <span class="app-name">{{ app.name }}</span>
@@ -21,15 +19,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed , ref } from 'vue';
 import { system } from '../api/system';
 import { showContextMenu } from '../api/contextmenu';
 import type { AppManifest } from '../types/system';
 import Taskbar from './Taskbar.vue';
 
 const apps = computed(() => system.listApps());
+const gridSize = ref({ columns: 10, rows: 1 });
 const visibleApps = computed(() => apps.value.filter(a => 
-  !a.hiddenFromDesktop && 
+
   (a.showOnDesktop !== false) && 
   !a.isSystemComponent
 ));
@@ -44,7 +43,7 @@ const desktopStyle = computed(() => {
 
 const gridStyle = computed(() => ({
   display: 'grid',
-  gridTemplateColumns: `repeat(auto-fill, 100px)`,
+  gridTemplateColumns: `repeat(auto-fill, minmax(100px, 1fr))`,
   gridAutoRows: '100px',
   gap: '20px',
   padding: '20px',
@@ -57,67 +56,6 @@ function openApp(id: string) {
   system.openApp(id); 
 }
 
-function handleDesktopContextMenu(e: MouseEvent) {
-  showContextMenu({
-    x: e.clientX,
-    y: e.clientY,
-    items: [
-      {
-        label: '刷新',
-        icon: '🔄',
-        action: () => window.location.reload()
-      },
-      { type: 'separator' },
-      {
-        label: '新建',
-        icon: '➕',
-        submenu: [
-          {
-            label: '文件夹',
-            icon: '📁',
-            action: () => console.log('新建文件夹')
-          },
-          {
-            label: '文本文件',
-            icon: '📄',
-            action: () => console.log('新建文件')
-          }
-        ]
-      },
-      { type: 'separator' },
-      {
-        label: '个性化',
-        icon: '🎨',
-        action: () => system.openApp('system-theme')
-      },
-      {
-        label: '壁纸设置',
-        icon: '🖼️',
-        action: () => system.openApp('system-wallpaper')
-      }
-    ]
-  });
-}
-
-function handleAppContextMenu(e: MouseEvent, app: AppManifest) {
-  showContextMenu({
-    x: e.clientX,
-    y: e.clientY,
-    items: [
-      {
-        label: '打开',
-        icon: '📂',
-        action: () => openApp(app.id)
-      },
-      { type: 'separator' },
-      {
-        label: '属性',
-        icon: '⚙️',
-        action: () => console.log('应用属性', app)
-      }
-    ]
-  });
-}
 </script>
 
 <style scoped>
@@ -129,7 +67,7 @@ function handleAppContextMenu(e: MouseEvent, app: AppManifest) {
   padding:8px; 
   border-radius:8px; 
   backdrop-filter: var(--desktop-icon-blur, blur(6px)); 
-  background:rgba(255,255,255,0.08); 
+  background:rgba(179, 174, 174, 0.05); 
   color:var(--text-color); 
   cursor:pointer; 
   transition: all var(--icon-hover-duration, 200ms) var(--icon-hover-easing, ease-out);

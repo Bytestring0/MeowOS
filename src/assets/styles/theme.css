@@ -81,7 +81,7 @@
 /* 玻璃主题 */
 [data-theme="glass"] {
   --bg-color: rgba(255, 255, 255, 0.5);
-  --bg-color-light: rgba(255, 255, 255, 0.8);
+  --bg-color-light: rgba(255, 255, 255, 0.2);
   --bg-color-darker: rgba(255, 255, 255, 0.9);
   --bg-primary: rgba(255, 255, 255, 0.6);
   --bg-secondary: rgba(255, 255, 255, 0.8);

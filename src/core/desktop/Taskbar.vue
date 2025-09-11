@@ -1,7 +1,7 @@
 <template>
   <div class="taskbar" :class="position" :style="taskbarStyle">
     <div class="taskbar-left">
-      <div class="brand" @click="openLauncher">MeowOS</div>
+      <div class="logo" @click="openLauncher">MeowOS</div>
     </div>
     <div class="taskbar-windows">
       <div v-for="item in items" :key="item.windowId" class="taskbar-item" :class="{active:item.isActive, minimized:item.isMinimized}" @click="toggle(item.windowId)" @dblclick="restore(item.windowId)">
@@ -28,7 +28,9 @@ const taskbarStyle = computed(()=> ({ height: config.taskbar.height + 'px' }));
 function toggle(id:string){ system.toggleMinimize(id); }
 function restore(id:string){ system.focusWindow(id); }
 function openApp(id:string){ system.openApp(id); }
-function openLauncher(){}
+function openLauncher(){
+  console.log("logo clicked");
+}
 </script>
 <style scoped>
 .taskbar {
@@ -127,11 +129,12 @@ function openLauncher(){}
   opacity: 0.9;
 }
 
-.brand {
+.logo {
   font-weight: 700;
   padding: 8px 16px;
   border-radius: var(--border-radius);
   background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary, #667eea));
+  opacity: 0.8;
   color: white;
   cursor: pointer;
   font-size: 14px;
@@ -139,7 +142,7 @@ function openLauncher(){}
   transition: all var(--animation-duration) ease;
 }
 
-.brand:hover {
+.logo:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
 }

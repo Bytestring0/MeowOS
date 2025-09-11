@@ -8,7 +8,8 @@ export default defineComponent({
   name: 'Desktop',
   
   setup() {
-    const wallpaper = ref('/wallpapers/default.jpg');
+    const wallpaper = ref('/wallpapers/default.svg');
+
     const apps = ref<AppManifest[]>([]);
     const gridSize = ref({ columns: 6, rows: 4 });
 
@@ -40,7 +41,8 @@ export default defineComponent({
     };
 
     // 监听事件
-    onMounted(() => {
+    onMounted(() => {    
+      console.log('Default wallpaper path:', wallpaper.value);
       loadWallpaper();
       loadApps();
 

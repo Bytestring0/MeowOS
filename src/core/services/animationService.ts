@@ -2,8 +2,8 @@ import { ref, reactive } from 'vue'
 import { storage } from '../api/storage'
 
 export interface AnimationConfig {
-  duration: number // 毫秒
-  easing: string // CSS 缓动函数
+  duration: number 
+  easing: string 
   enabled: boolean
 }
 

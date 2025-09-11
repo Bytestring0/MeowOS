@@ -10,15 +10,14 @@ export interface AppManifest {
   settings?: {
     [key: string]: any;
   };
-  hiddenFromDesktop?: boolean; // 例如终端不在桌面显示
-  singleInstance?: boolean; // 强制单实例
-  showOnDesktop?: boolean; // 是否在桌面显示图标
-  isSystemComponent?: boolean; // 是否是系统组件
-  autoStart?: boolean; // 是否自动启动
-  visible?: boolean; // 是否可见（用于服务类应用）
-  permissions?: string[]; // 权限列表
-  category?: string; // 应用分类
-  singleton?: boolean; // 是否单例
+  singleInstance?: boolean; 
+  showOnDesktop?: boolean; 
+  isSystemComponent?: boolean; 
+  autoStart?: boolean; 
+  visible?: boolean; 
+  permissions?: string[]; 
+  category?: string; 
+  singleton?: boolean; 
 }
 
 export interface WindowState {
@@ -57,10 +56,10 @@ export interface SystemState {
 export interface ThemeDefinition {
   id: string;
   name: string;
-  variables: Record<string, string>; // CSS 变量覆写
+  variables: Record<string, string>; 
   effects?: {
-    windowBlur?: boolean; // 毛玻璃
-    translucency?: number; // 0-1 透明度
+    windowBlur?: boolean; 
+    translucency?: number; 
   };
 }
 

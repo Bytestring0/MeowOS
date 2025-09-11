@@ -266,7 +266,7 @@ const isLoadingUrl = ref(false);
 const loadBuiltinWallpapers = async () => {
   try {
     isLoadingWallpapers.value = true;
-    builtinWallpapers.value = await system.getBuiltinWallpapers();
+    builtinWallpapers.value = await system.getDefaultWallpapers();
   } catch (error) {
     console.error('Failed to load builtin wallpapers:', error);
     // 使用默认壁纸列表作为备用
