@@ -1,4 +1,4 @@
-type EventCallback = (payload?: any) => void;
+type EventCallback = (...payload: any[]) => void;
 
 interface EventMap {
   [key: string]: EventCallback[];
@@ -31,12 +31,13 @@ class EventBus {
   }
 
   // 发布事件
-  emit(event: string, payload?: any): void {
+  emit(event: string, ...payload: any[]): void {
     if (!this.events[event]) return;
     
     this.events[event].forEach(callback => {
       try {
-        callback(payload);
+        console.log(`Emitting event: ${event} with payload:`, payload);
+        callback(...payload);
       } catch (error) {
         console.error(`Error in event handler for ${event}:`, error);
       }
@@ -82,3 +83,4 @@ export enum SystemEvents {
   WindowMinimized = 'windowMinimized',
   WindowMaximized = 'windowMaximized',
 }
+export const UserEvents: { [key: string]: string } = {};

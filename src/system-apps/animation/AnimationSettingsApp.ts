@@ -1,6 +1,6 @@
 import { defineComponent, ref, onMounted, computed } from 'vue';
-import { animationService } from '../../core/services/animationService';
-import type { AnimationPreset } from '../../core/services/animationService';
+import { animationService } from '../../core/api/animationService';
+import type { AnimationPreset } from '../../core/types/system';
 
 export default defineComponent({
   name: 'AnimationSettingsApp',

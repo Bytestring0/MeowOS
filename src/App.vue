@@ -24,7 +24,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="app no-select" :data-theme="system.theme">
+  <div class="app" :data-theme="system.theme">
     <Desktop />
     <Window v-for="w in windows" :key="w.id" :window="w" />
   </div>

@@ -1,5 +1,5 @@
 // MeowOS 彩蛋系统
-import { eventBus } from './eventBus'
+import { eventBus } from './event';
 
 export class EasterEggService {
   private static instance: EasterEggService

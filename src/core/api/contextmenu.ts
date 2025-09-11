@@ -1,4 +1,4 @@
-import { eventBus } from '../services/eventBus'
+import { eventBus } from '../api/event';
 
 export interface ContextMenuItem {
   label?: string

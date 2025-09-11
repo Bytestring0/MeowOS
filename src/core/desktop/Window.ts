@@ -2,10 +2,10 @@ import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
 import type { PropType } from 'vue';
 import { system } from '../api/system';
 import type { WindowState } from '../types/system';
-import { eventBus, SystemEvents } from '../services/eventBus';
+import { eventBus, SystemEvents } from '../api/event';
 import { showContextMenu } from '../api/contextmenu';
 import type { ContextMenuItem } from '../api/contextmenu';
-import { animationService } from '../services/animationService';
+import { animationService } from '../api/animationService';
 
 // 自动扫描 system-apps 目录下的所有 .vue 组件
 const modules = import.meta.glob('../../system-apps/*/*.vue', { eager: true })

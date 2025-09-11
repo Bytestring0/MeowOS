@@ -14,9 +14,6 @@
         >
           <div class="preset-name">{{ preset.name }}</div>
           <div class="preset-description">{{ preset.description }}</div>
-          <div class="preset-speed">
-            窗口动画: {{ getSpeedText(preset.windowOpen.duration) }}
-          </div>
         </div>
       </div>
     </div>
@@ -36,31 +33,6 @@
       </div>
     </div>
 
-    <div v-if="selectedPreset" class="settings-section">
-      <h3>当前方案详情</h3>
-      <div class="details-grid">
-        <div class="detail-item">
-          <label>窗口打开</label>
-          <span>{{ selectedPreset.windowOpen.duration }}ms - {{ selectedPreset.windowOpen.easing }}</span>
-        </div>
-        <div class="detail-item">
-          <label>窗口关闭</label>
-          <span>{{ selectedPreset.windowClose.duration }}ms - {{ selectedPreset.windowClose.easing }}</span>
-        </div>
-        <div class="detail-item">
-          <label>窗口最小化</label>
-          <span>{{ selectedPreset.windowMinimize.duration }}ms - {{ selectedPreset.windowMinimize.easing }}</span>
-        </div>
-        <div class="detail-item">
-          <label>窗口最大化</label>
-          <span>{{ selectedPreset.windowMaximize.duration }}ms - {{ selectedPreset.windowMaximize.easing }}</span>
-        </div>
-        <div class="detail-item">
-          <label>图标悬停</label>
-          <span>{{ selectedPreset.desktopIconHover.duration }}ms - {{ selectedPreset.desktopIconHover.easing }}</span>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 

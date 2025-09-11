@@ -1,4 +1,4 @@
-import type { SystemConfig, ThemeDefinition, WallpaperSource, WindowAnimationConfig } from '../core/types/system';
+import type { SystemConfig, ThemeDefinition, WallpaperSource, UserConfig } from '../types/system';
 
 // 默认主题定义 - 包含完整的CSS变量
 export const defaultThemes: ThemeDefinition[] = [
@@ -165,21 +165,13 @@ export const defaultWallpapers: WallpaperSource[] = [
   }
 ];
 
-// 默认动画配置
-export const defaultAnimations: WindowAnimationConfig = {
-  open: 'fade-in 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  close: 'fade-out 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  minimize: 'scale-down 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  maximize: 'scale-up 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  restore: 'scale-up 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-};
+
 
 // 系统默认配置
 export const defaultSystemConfig: SystemConfig = {
   defaultTheme: 'light',
   themes: defaultThemes,
   wallpapers: defaultWallpapers,
-  windowAnimations: defaultAnimations,
   enableWindowShadow: true,
   enableGlassEffect: true,
   taskbar: {
@@ -188,38 +180,6 @@ export const defaultSystemConfig: SystemConfig = {
   }
 };
 
-// 用户可以覆盖的配置接口
-export interface UserConfig {
-  defaultTheme?: string;
-  themes?: Partial<ThemeDefinition>[];
-  wallpapers?: Partial<WallpaperSource>[];
-  windowAnimations?: Partial<WindowAnimationConfig>;
-  taskbar?: {
-    height?: number;
-    position?: 'bottom' | 'top' | 'left' | 'right';
-    autoHide?: boolean;
-    showClock?: boolean;
-    showSystemTray?: boolean;
-  };
-  desktop?: {
-    showDesktopIcons?: boolean;
-    iconSize?: 'small' | 'medium' | 'large';
-    gridSnap?: boolean;
-    layout?: 'grid' | 'list' | 'large-icons';
-  };
-  window?: {
-    animationEnabled?: boolean;
-    snapToEdge?: boolean;
-    transparencyEffects?: boolean;
-  };
-  enableWindowShadow?: boolean;
-  enableGlassEffect?: boolean;
-  mouse?: {
-    enableUserSelect?: boolean;
-    enableContextMenu?: boolean;
-    enableDragSelect?: boolean;
-  };
-}
 
 // 合并用户配置的函数
 export function mergeUserConfig(userConfig: UserConfig): SystemConfig {
@@ -232,11 +192,6 @@ export function mergeUserConfig(userConfig: UserConfig): SystemConfig {
   if (userConfig.wallpapers) {
     config.wallpapers = [...defaultWallpapers, ...userConfig.wallpapers as WallpaperSource[]];
   }
-  
-  if (userConfig.windowAnimations) {
-    config.windowAnimations = { ...defaultAnimations, ...userConfig.windowAnimations };
-  }
-  
   if (userConfig.taskbar) {
     config.taskbar = { ...config.taskbar, ...userConfig.taskbar };
   }

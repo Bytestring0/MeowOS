@@ -7,18 +7,18 @@ import type {
   TaskbarItem,
   ThemeDefinition,
   WallpaperSource,
+  UserConfig
 } from '../types/system';
 import { storage } from './storage';
-import { eventBus, SystemEvents } from '../services/eventBus';
-import { defaultSystemConfig, mergeUserConfig } from '../../config/system';
-import type { UserConfig } from '../../config/system';
+import { eventBus, SystemEvents } from './event';
+import { defaultSystemConfig, mergeUserConfig } from './config';
 import { userConfig } from '../../config/user-config';
 
 class SystemService {
   private state = reactive<SystemState>({
     apps: [],
     windows: [],
-    theme: 'default',
+    theme: '',
     wallpaper: '',
     settings: {},
     config: defaultSystemConfig,
@@ -77,7 +77,7 @@ class SystemService {
 
       apps.push(manifest);
     }
-
+    console.log('Loaded system apps:', apps);
     return apps;
   }
   private async loadSettings() {
@@ -109,6 +109,7 @@ class SystemService {
   private createWindowState(app: AppManifest): WindowState {
     const id = `${app.id}-${this.nextWindowId++}`;
     return {
+      app,
       id,
       title: app.name,
       icon: app.icon,
@@ -207,9 +208,10 @@ class SystemService {
   }
 
   async setWallpaper(wallpaper: string) {
+    const oldWallpaper = this.state.wallpaper;
     this.state.wallpaper = wallpaper;
     await this.saveSettings();
-    eventBus.emit(SystemEvents.WallpaperChanged, wallpaper);
+    eventBus.emit(SystemEvents.WallpaperChanged, oldWallpaper, wallpaper);
   }
 
   applyTheme(themeId: string) {

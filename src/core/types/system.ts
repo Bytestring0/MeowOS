@@ -21,6 +21,7 @@ export interface AppManifest {
 }
 
 export interface WindowState {
+  app: AppManifest;
   id: string;
   title: string;
   icon: string;
@@ -71,19 +72,10 @@ export interface WallpaperSource {
   name?: string;
 }
 
-export interface WindowAnimationConfig {
-  open: string;
-  close: string;
-  minimize: string;
-  maximize: string;
-  restore: string;
-}
-
 export interface SystemConfig {
   defaultTheme: string;
   themes: ThemeDefinition[];
   wallpapers: WallpaperSource[];
-  windowAnimations: WindowAnimationConfig;
   enableWindowShadow: boolean;
   enableGlassEffect: boolean;
   taskbar: {
@@ -99,4 +91,55 @@ export interface TaskbarItem {
   icon: string;
   isActive: boolean;
   isMinimized: boolean;
+}
+// 用户可以覆盖的配置接口
+export interface UserConfig {
+  defaultTheme?: string;
+  themes?: Partial<ThemeDefinition>[];
+  wallpapers?: Partial<WallpaperSource>[];
+  taskbar?: {
+    height?: number;
+    position?: 'bottom' | 'top' | 'left' | 'right';
+    autoHide?: boolean;
+    showClock?: boolean;
+    showSystemTray?: boolean;
+  };
+  desktop?: {
+    showDesktopIcons?: boolean;
+    iconSize?: 'small' | 'medium' | 'large';
+    gridSnap?: boolean;
+    layout?: 'grid' | 'list' | 'large-icons';
+  };
+  window?: {
+    animationEnabled?: boolean;
+    snapToEdge?: boolean;
+    transparencyEffects?: boolean;
+  };
+  enableWindowShadow?: boolean;
+  enableGlassEffect?: boolean;
+  mouse?: {
+    enableUserSelect?: boolean;
+    enableContextMenu?: boolean;
+    enableDragSelect?: boolean;
+  };
+}
+
+export interface AnimationConfig {
+  duration: number 
+  easing: string 
+  enabled: boolean
+  // 添加自定义样式配置
+  keyframes?: Keyframe[]
+  options?: Partial<KeyframeAnimationOptions>
+  description?: string
+  // 或者使用函数来动态生成样式
+  customAnimation?: (element: HTMLElement, ...args: any[]) => Animation
+}
+
+export interface AnimationPreset {
+  id: string
+  name: string
+  description: string
+  // 支持不定长的动画配置
+  [animationType: string]: string | AnimationConfig
 }
