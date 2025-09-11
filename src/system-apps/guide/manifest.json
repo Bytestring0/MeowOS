@@ -1,0 +1,9 @@
+{
+  "id": "system-guide",
+  "name": "网址导航",
+  "description": "在系统中直接打开另一个网址",
+  "version": "1.0.0",
+  "icon": "icons/guide.svg",
+  "type": "app",
+  "entry": "GuideApp"
+}
