@@ -1,7 +1,0 @@
-Welcome to MeowOS!
-
-This is a sample text file in the Documents folder.
-
-You can create, edit, and save files using the built-in applications.
-
-Enjoy exploring your new operating system! 🐱
