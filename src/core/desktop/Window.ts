@@ -50,7 +50,7 @@ export default defineComponent({
     // 窗口控制
     const minimize = async () => {
       if (windowRef.value) {
-        // 获取任务栏按钮位置（简化版）
+        
         const taskbarRect = new DOMRect(0, window.innerHeight - 50, 200, 50);
         const animation = animationService.animateWindowMinimize(windowRef.value, taskbarRect);
         

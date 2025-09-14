@@ -241,21 +241,23 @@ class AnimationService {
     ...args: any[]
   ): Animation {
     const config = this.getCurrentConfig()[type] as AnimationConfig;
-
+    
     if (!config || !config.enabled) {
       // 如果动画被禁用，立即跳到最后一帧
-      if (defaultKeyframes && defaultKeyframes.length > 0) {
-        const lastFrame = defaultKeyframes[defaultKeyframes.length - 1];
-        Object.assign(element.style, lastFrame);
-      }
-      return new Animation();
+ const keyframes = defaultKeyframes || [];
+
+    const animationOptions: KeyframeAnimationOptions = {
+      fill: 'forwards',
+      ...options,
+    };
+
+    return element.animate(keyframes, animationOptions);
     }
 
     // 如果有自定义动画函数，优先使用
     if (config.customAnimation) {
       return config.customAnimation(element, ...args);
     }
-
     // 使用配置中的 keyframes 或默认的 keyframes
     const keyframes = config.keyframes || defaultKeyframes || [];
 
