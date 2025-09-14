@@ -101,7 +101,7 @@ class AnimationService {
 
           return new Animation();
         },
-      }
+      },
     },
     {
       id: 'smooth',
@@ -241,17 +241,17 @@ class AnimationService {
     ...args: any[]
   ): Animation {
     const config = this.getCurrentConfig()[type] as AnimationConfig;
-    
+
     if (!config || !config.enabled) {
       // 如果动画被禁用，立即跳到最后一帧
- const keyframes = defaultKeyframes || [];
+      const keyframes = defaultKeyframes || [];
 
-    const animationOptions: KeyframeAnimationOptions = {
-      fill: 'forwards',
-      ...options,
-    };
+      const animationOptions: KeyframeAnimationOptions = {
+        fill: 'forwards',
+        ...options,
+      };
 
-    return element.animate(keyframes, animationOptions);
+      return element.animate(keyframes, animationOptions);
     }
 
     // 如果有自定义动画函数，优先使用
@@ -268,12 +268,13 @@ class AnimationService {
       ...config.options,
       ...options,
     };
-
+    console.log('Animating element with config:', animationOptions, keyframes);
     return element.animate(keyframes, animationOptions);
   }
 
   // 窗口打开动画 - 现在支持自定义样式
   animateWindowOpen(element: HTMLElement): Animation {
+    console.log('Animating window open:', element);
     return this.animateElement(element, 'windowOpen', [
       {
         opacity: 0,

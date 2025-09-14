@@ -4,7 +4,7 @@ export interface AppManifest {
   description?: string;
   version: string;
   icon: string;
-  type: 'app' | 'widget' | 'cli' | 'service';
+  type: 'app' | 'widget' | 'cli' | 'service' | 'system-component';
   entry: string;
   replace?: string;
   settings?: {
@@ -24,6 +24,8 @@ export interface AppManifest {
     y: number;
     gridIndex?: number; // 在网格中的索引，用于排序
   };
+  // 系统组件配置
+  systemComponent?: SystemComponentConfig;
 }
 
 export interface WindowState {
@@ -148,4 +150,53 @@ export interface AnimationPreset {
   description: string
   // 支持不定长的动画配置
   [animationType: string]: string | AnimationConfig
+}
+
+export interface SystemComponentConfig {
+  // 组件位置
+  position: {
+    type: 'desktop' | 'taskbar' | 'overlay';
+    // 对于 desktop 类型
+    x?: number;
+    y?: number;
+    anchor?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+    // 对于 taskbar 类型
+    placement?: 'left' | 'right' | 'center';
+    order?: number; // 在taskbar中的顺序
+  };
+  // 显示设置
+  display: {
+    zIndex?: number;
+    always?: boolean; // 是否总是显示
+    draggable?: boolean; // 是否可拖拽
+    resizable?: boolean; // 是否可调整大小
+    opacity?: number; // 透明度
+  };
+  // 组件大小
+  size?: {
+    width?: number | string;
+    height?: number | string;
+    minWidth?: number;
+    minHeight?: number;
+    maxWidth?: number;
+    maxHeight?: number;
+  };
+  // 行为设置
+  behavior?: {
+    clickThrough?: boolean; // 点击穿透
+    hideOnBlur?: boolean; // 失去焦点时隐藏
+    autoHide?: boolean; // 自动隐藏
+    showOnHover?: boolean; // 悬停显示
+  };
+}
+
+export interface SystemComponentState {
+  id: string;
+  manifest: AppManifest;
+  visible: boolean;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  zIndex: number;
+  isDragging?: boolean;
+  isResizing?: boolean;
 }

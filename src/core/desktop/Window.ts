@@ -3,8 +3,6 @@ import type { PropType } from 'vue';
 import { system } from '../api/system';
 import type { WindowState } from '../types/system';
 import { eventBus, SystemEvents } from '../api/event';
-import { showContextMenu } from '../api/contextmenu';
-import type { ContextMenuItem } from '../api/contextmenu';
 import { animationService } from '../api/animationService';
 
 // 自动扫描 system-apps 目录下的所有 .vue 组件
@@ -96,13 +94,16 @@ export default defineComponent({
       }, 100);
     };
 
-    const close = () => {
+    const close = async() => {
       // 直接通过窗口ID关闭特定窗口
       const windowIndex = system.getWindows().findIndex(w => w.id === props.window.id);
-      if (windowIndex !== -1) {
+      if (windowIndex !== -1) {        
+        animationService.animateWindowClose(windowRef.value!).finished;
         system.getWindows().splice(windowIndex, 1);
         eventBus.emit(SystemEvents.WindowClosed, props.window);
+
       }
+
     };
 
     // 拖拽相关
@@ -199,70 +200,9 @@ export default defineComponent({
       eventBus.emit(SystemEvents.WindowFocused, props.window);
     };
 
-    // 窗口标题栏右键菜单
-    const handleHeaderContextMenu = (event: MouseEvent) => {
-      const items: ContextMenuItem[] = [
-        {
-          label: '还原',
-          icon: '🔄',
-          disabled: !props.window.isMaximized && !props.window.isMinimized,
-          action: () => {
-            if (props.window.isMaximized) {
-              maximize(); // 切换最大化状态
-            } else if (props.window.isMinimized) {
-              minimize(); // 切换最小化状态
-            }
-          }
-        },
-        {
-          label: '移动',
-          icon: '↔️',
-          disabled: props.window.isMaximized,
-          action: () => {
-            // 进入移动模式
-            console.log('进入移动模式');
-          }
-        },
-        {
-          label: '大小',
-          icon: '📏',
-          disabled: props.window.isMaximized,
-          action: () => {
-            // 进入调整大小模式
-            console.log('进入调整大小模式');
-          }
-        },
-        {
-          label: '最小化',
-          icon: '➖',
-          disabled: props.window.isMinimized,
-          action: minimize
-        },
-        {
-          label: props.window.isMaximized ? '还原' : '最大化',
-          icon: props.window.isMaximized ? '🔻' : '🔺',
-          action: maximize
-        },
-        { type: 'separator' },
-        {
-          label: '关闭',
-          icon: '✖️',
-          danger: true,
-          shortcut: 'Alt+F4',
-          action: close
-        }
-      ];
-
-      showContextMenu({
-        x: event.clientX,
-        y: event.clientY,
-        items,
-        title: props.window.title
-      });
-    };
-
-    onMounted(() => {
+    onMounted(async () => {
       if (windowRef.value) {
+        animationService.animateWindowOpen(windowRef.value);
         focus();
       }
     });
@@ -284,7 +224,6 @@ export default defineComponent({
       onWindowEnter,
       onWindowLeave,
       appRegistry, // 暴露给模板
-      handleHeaderContextMenu, // 暴露右键菜单处理函数
     };
   },
 });

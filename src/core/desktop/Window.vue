@@ -1,4 +1,7 @@
 <template>
+  <div>
+    
+  </div>
   <Transition 
     name="window"
     appear
@@ -26,7 +29,7 @@
       }"
       @mousedown="focus"
     >
-    <div class="window-header" @mousedown="startDrag" @contextmenu.prevent="handleHeaderContextMenu">
+    <div class="window-header" @mousedown="startDrag">
       <div class="window-title">
         <img :src="window.icon" :alt="window.title" class="window-icon" />
         <span>{{ window.title }}</span>
