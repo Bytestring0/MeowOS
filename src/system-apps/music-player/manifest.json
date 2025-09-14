@@ -3,7 +3,7 @@
   "name": "音乐播放器",
   "description": "简约风格的音乐播放器",
   "version": "1.0.0",
-  "icon": "/icons/music.svg",
+  "icon": "icons/music.svg",
   "type": "app",
   "entry": "MusicPlayerApp",
   "commands": {

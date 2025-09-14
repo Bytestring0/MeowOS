@@ -254,7 +254,7 @@ function formatTime(seconds: number): string {
 // 从public/audio加载音乐列表
 async function loadAudioPlaylist() {
   try {
-    const response = await fetch('/audio/playlist.json');
+    const response = await fetch('/MeowOS/audio/playlist.json');
     if (response.ok) {
       const tracks = await response.json();
       systemAudio.setPlaylist(tracks);
