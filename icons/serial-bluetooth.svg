@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+  <!-- 串口连接线 -->
+  <path d="M2 6h4v2H2V6zM2 10h4v2H2v-2zM2 14h4v2H2v-2z" />
+  <path d="M8 8h6v1H8V8zM8 11h6v1H8v-1zM8 14h6v1H8v-1z" />
+  
+  <!-- 蓝牙图标 -->
+  <path d="M17.71 7.71L16 6H14v5.59l-2.29-2.3L10.3 10.7 12.59 13l-2.29 2.29 1.41 1.41L14 14.41V20h2l1.71-1.71L15.41 16l2.3-2.29zM16 8.41L17.59 10 16 11.59V8.41zM16 14.41v3.18L17.59 16 16 14.41z"/>
+  
+  <!-- 连接线 -->
+  <path d="M6 8h2v8H6V8z" stroke="currentColor" stroke-width="1" fill="none"/>
+  
+  <!-- 设备框 -->
+  <rect x="1" y="5" width="6" height="14" rx="1" stroke="currentColor" stroke-width="1" fill="none"/>
+  <rect x="13" y="5" width="10" height="14" rx="1" stroke="currentColor" stroke-width="1" fill="none"/>
+</svg>
