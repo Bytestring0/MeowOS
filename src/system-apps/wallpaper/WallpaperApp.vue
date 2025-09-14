@@ -217,6 +217,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { system } from '../../core/api/system';
 import { storage } from '../../core/api/storage';
+import sweetAlert from '../../config/sweetAlert';
 
 const currentWallpaper = computed(() => system.wallpaper);
 
@@ -349,7 +350,7 @@ async function loadUrlWallpaper() {
     urlPreview.value = url.toString();
   } catch (error) {
     console.error('Invalid URL:', error);
-    alert('请输入有效的图片URL');
+    sweetAlert.error('无效的URL', '请输入有效的图片URL地址');
   } finally {
     isLoadingUrl.value = false;
   }
@@ -364,7 +365,7 @@ function onUrlImageError() {
   console.error('URL图片加载失败');
   urlPreview.value = '';
   isLoadingUrl.value = false;
-  alert('图片加载失败，请检查URL是否正确');
+  sweetAlert.error('图片加载失败', '请检查URL是否正确或重试');
 }
 
 function clearUrlPreview() {

@@ -64,6 +64,25 @@ class SystemService {
 
   private async loadApps() {
     this.state.apps = this.getDefaultSystemApps();
+    // 初始化图标位置
+    this.initializeIconPositions();
+  }
+
+  // 初始化图标位置（为没有位置信息的应用分配位置）
+  private initializeIconPositions() {
+    const visibleApps = this.state.apps.filter(a => 
+      (a.showOnDesktop !== false) && !a.isSystemComponent
+    );
+
+    visibleApps.forEach((app, index) => {
+      if (!app.desktopPosition) {
+        app.desktopPosition = {
+          x: 0,
+          y: 0,
+          gridIndex: index
+        };
+      }
+    });
   }
 
   private getDefaultSystemApps(): AppManifest[] {
@@ -93,6 +112,9 @@ class SystemService {
       this.state.wallpaper = '/wallpapers/default.svg';
     }
 
+    // 加载图标位置信息
+    await this.loadIconPositions();
+
     // 应用已保存的主题
     this.applyTheme(this.state.theme);
   }
@@ -104,6 +126,116 @@ class SystemService {
       settings: this.state.settings,
     };
     await storage.setSystemSetting('systemSettings', settings);
+  }
+
+  // 加载图标位置信息
+  private async loadIconPositions() {
+    const savedPositions = await storage.getSystemSetting('iconPositions');
+    if (savedPositions) {
+      console.log('Loaded icon positions:', savedPositions);
+      // 将保存的位置信息应用到应用列表中
+      this.state.apps.forEach(app => {
+        const savedPos = savedPositions[app.id];
+        if (savedPos) {
+          app.desktopPosition = savedPos;
+        }
+      });
+      eventBus.emit(SystemEvents.DesktopLayoutLoaded, savedPositions);
+    }
+  }
+
+  // 保存图标位置信息
+  public async saveIconPositions() {
+    const positions: Record<string, any> = {};
+    const metadata = {
+      savedAt: new Date().toISOString(),
+      version: '1.0',
+      totalApps: 0
+    };
+
+    this.state.apps.forEach(app => {
+      if (app.desktopPosition) {
+        positions[app.id] = {
+          ...app.desktopPosition,
+          appName: app.name, // 保存应用名称用于调试
+          appVersion: app.version
+        };
+        metadata.totalApps++;
+      }
+    });
+
+    // 保存位置数据和元数据
+    await storage.setSystemSetting('iconPositions', positions);
+    await storage.setSystemSetting('iconPositionsMetadata', metadata);
+    
+    console.log('Saved icon positions:', positions);
+    console.log('Saved metadata:', metadata);
+    
+    eventBus.emit(SystemEvents.DesktopLayoutSaved, { positions, metadata });
+  }
+
+  // 更新单个应用的桌面位置
+  public updateAppPosition(appId: string, position: { x: number; y: number; gridIndex?: number }) {
+    const app = this.state.apps.find(a => a.id === appId);
+    if (app) {
+      const oldPosition = app.desktopPosition;
+      app.desktopPosition = position;
+      
+      // 发布位置变更事件
+      eventBus.emit(SystemEvents.IconPositionChanged, {
+        appId,
+        oldPosition,
+        newPosition: position
+      });
+      
+      this.saveIconPositions(); // 自动保存
+    }
+  }
+
+  // 交换两个应用的位置
+  public swapAppPositions(appId1: string, appId2: string) {
+    const app1 = this.state.apps.find(a => a.id === appId1);
+    const app2 = this.state.apps.find(a => a.id === appId2);
+    
+    if (app1 && app2) {
+      const temp = app1.desktopPosition;
+      app1.desktopPosition = app2.desktopPosition;
+      app2.desktopPosition = temp;
+      
+      // 发布交换事件
+      eventBus.emit(SystemEvents.IconOrderChanged, {
+        app1: appId1,
+        app2: appId2,
+        position1: app1.desktopPosition,
+        position2: app2.desktopPosition
+      });
+      
+      this.saveIconPositions(); // 自动保存
+    }
+  }
+
+  // 批量更新图标位置（用于拖拽排序）
+  public updateMultipleAppPositions(updates: Array<{ appId: string; position: { x: number; y: number; gridIndex?: number } }>) {
+    const changedApps: Array<{ appId: string; oldPosition: any; newPosition: any }> = [];
+    
+    updates.forEach(({ appId, position }) => {
+      const app = this.state.apps.find(a => a.id === appId);
+      if (app) {
+        const oldPosition = app.desktopPosition;
+        app.desktopPosition = position;
+        changedApps.push({ appId, oldPosition, newPosition: position });
+      }
+    });
+
+    if (changedApps.length > 0) {
+      // 发布批量更新事件
+      eventBus.emit(SystemEvents.IconOrderChanged, {
+        type: 'batch',
+        changes: changedApps
+      });
+      
+      this.saveIconPositions(); // 自动保存
+    }
   }
 
   private createWindowState(app: AppManifest): WindowState {

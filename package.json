@@ -18,8 +18,20 @@
     "format": "prettier --write \"src/**/*.{ts,vue}\""
   },
   "dependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "highlight.js": "^11.11.1",
     "idb": "^8.0.3",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-highlightjs": "^4.2.0",
+    "markdown-it-mark": "^4.0.0",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-toc-done-right": "^4.2.0",
     "pinia": "^3.0.3",
+    "sweetalert2": "^11.23.0",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

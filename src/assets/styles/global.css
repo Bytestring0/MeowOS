@@ -1,4 +1,5 @@
 @import './theme.css';
+@import './sweetAlert.css';
 
 /* 禁用文本选择 */
 .no-select {

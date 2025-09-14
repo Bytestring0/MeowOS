@@ -1,5 +1,6 @@
 import { defineComponent, ref, onMounted, onUnmounted, computed } from 'vue';
 import { storage } from '../../core/api/storage';
+import sweetAlert from '../../config/sweetAlert';
 
 interface Timer {
   id: string;
@@ -204,7 +205,7 @@ export default defineComponent({
         if (alarm.time === currentTimeStr) {
           if (!alarm.repeat || alarm.days.length === 0 || alarm.days.includes(currentDay)) {
             // 触发闹钟
-            alert(`闹钟响了：${alarm.name}`);
+            sweetAlert.alert(`闹钟响了：${alarm.name}`, '⏰ 闹钟提醒');
             
             // 如果不是重复闹钟，则禁用它
             if (!alarm.repeat) {
@@ -239,7 +240,7 @@ export default defineComponent({
             if (timer.remaining === 0) {
               timer.isRunning = false;
               timer.isFinished = true;
-              alert(`定时器结束：${timer.name}`);
+              sweetAlert.alert(`定时器结束：${timer.name}`, '⏲️ 定时器提醒');
             }
           }
         });

@@ -82,5 +82,12 @@ export enum SystemEvents {
   WindowFocused = 'windowFocused',
   WindowMinimized = 'windowMinimized',
   WindowMaximized = 'windowMaximized',
+  // 桌面图标相关事件
+  IconDragStart = 'iconDragStart',
+  IconDragEnd = 'iconDragEnd',
+  IconPositionChanged = 'iconPositionChanged',
+  IconOrderChanged = 'iconOrderChanged',
+  DesktopLayoutSaved = 'desktopLayoutSaved',
+  DesktopLayoutLoaded = 'desktopLayoutLoaded',
 }
 export const UserEvents: { [key: string]: string } = {};

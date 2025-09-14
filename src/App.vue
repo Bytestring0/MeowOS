@@ -31,12 +31,16 @@ onMounted(async () => {
 </template>
 
 <style>
-:root { @import '@/assets/styles/theme.css'; }
-.app { 
-  width:100vw; 
-  height:100vh; 
-  position:relative; 
-  user-select: none; /* 禁用用户选择 */
+:root {
+  @import '@/assets/styles/theme.css';
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  user-select: none;
+  /* 禁用用户选择 */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -44,9 +48,13 @@ onMounted(async () => {
 
 /* 全局禁用文本选择蓝色高亮 */
 * {
-  -webkit-user-select: none;
+  /* 火狐 */
   -moz-user-select: none;
+  /* Safari 和 欧朋 */
+  -webkit-user-select: none;
+  /* IE10+ and Edge */
   -ms-user-select: none;
+  /* Standard syntax 标准语法(谷歌) */
   user-select: none;
 }
 
@@ -59,14 +67,18 @@ onMounted(async () => {
 }
 
 /* 允许在输入框中选择文本 */
-input, textarea, [contenteditable="true"] {
+input,
+textarea,
+[contenteditable="true"] {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
 }
 
-input::selection, textarea::selection, [contenteditable="true"]::selection {
+input::selection,
+textarea::selection,
+[contenteditable="true"]::selection {
   background: var(--primary-color, #4a90e2);
   color: white;
 }

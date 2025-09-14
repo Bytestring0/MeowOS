@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
+import sweetAlert from "../../config/sweetAlert"
 
 const urlInput = ref("")
 const iframeUrl = ref("")
@@ -24,7 +25,7 @@ const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/
 
 const openIframe = () => {
     if (!urlInput.value) {
-        alert("请输入一个网址")
+        sweetAlert.warning("请输入一个网址", "输入提示")
         return
     }
 
@@ -46,7 +47,7 @@ const openIframe = () => {
 
 <style scoped>
 .web {
-    width: 100vh;
+    width: 100%;
     height: 100vh;
 }
 

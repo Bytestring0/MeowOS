@@ -1,0 +1,356 @@
+/* SweetAlert2 自定义样式 */
+
+/* 弹窗容器样式 */
+.meowos-popup {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif) !important;
+}
+
+/* 标题样式 */
+.meowos-title {
+  color: var(--text-color, #333) !important;
+  font-weight: 600 !important;
+  font-size: 1.25rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* 内容样式 */
+.meowos-content {
+  color: var(--text-color-secondary, #666) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+}
+
+/* 确认按钮样式 */
+.meowos-confirm-btn {
+  background: linear-gradient(135deg, #4A90E2, #357ABD) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3) !important;
+}
+
+.meowos-confirm-btn:hover {
+  background: linear-gradient(135deg, #357ABD, #2E6DA4) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4) !important;
+}
+
+.meowos-confirm-btn:focus {
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25) !important;
+}
+
+/* 取消按钮样式 */
+.meowos-cancel-btn {
+  background: rgba(108, 117, 125, 0.1) !important;
+  color: var(--text-color, #666) !important;
+  border: 1px solid rgba(108, 117, 125, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.meowos-cancel-btn:hover {
+  background: rgba(108, 117, 125, 0.15) !important;
+  border-color: rgba(108, 117, 125, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Toast 消息样式 */
+.meowos-toast {
+  border-radius: 10px !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  font-size: 0.9rem !important;
+  padding: 1rem !important;
+}
+
+/* 深色主题适配 */
+[data-theme="dark"] .meowos-popup,
+body.theme-dark .meowos-popup {
+  background: rgba(30, 30, 30, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .meowos-title,
+body.theme-dark .meowos-title {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="dark"] .meowos-content,
+body.theme-dark .meowos-content {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="dark"] .meowos-cancel-btn,
+body.theme-dark .meowos-cancel-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .meowos-cancel-btn:hover,
+body.theme-dark .meowos-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .meowos-toast,
+body.theme-dark .meowos-toast {
+  background: rgba(40, 40, 40, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 毛玻璃主题适配 */
+[data-theme="glass"] .meowos-popup,
+body.theme-glass .meowos-popup {
+  background: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="glass"] .meowos-title,
+body.theme-glass .meowos-title {
+  color: #303133 !important;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="glass"] .meowos-content,
+body.theme-glass .meowos-content {
+  color: #606266 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="glass"] .meowos-cancel-btn,
+body.theme-glass .meowos-cancel-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #303133 !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="glass"] .meowos-cancel-btn:hover,
+body.theme-glass .meowos-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="glass"] .meowos-toast,
+body.theme-glass .meowos-toast {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(15px) saturate(150%) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #303133 !important;
+}
+
+/* 自定义蓝色主题适配 */
+[data-theme="custom-blue"] .meowos-popup,
+body.theme-custom-blue .meowos-popup {
+  background: rgba(248, 250, 252, 0.95) !important;
+  border-color: rgba(203, 213, 225, 0.3) !important;
+}
+
+[data-theme="custom-blue"] .meowos-title,
+body.theme-custom-blue .meowos-title {
+  color: #0f172a !important;
+}
+
+[data-theme="custom-blue"] .meowos-content,
+body.theme-custom-blue .meowos-content {
+  color: #334155 !important;
+}
+
+[data-theme="custom-blue"] .meowos-confirm-btn,
+body.theme-custom-blue .meowos-confirm-btn {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3) !important;
+}
+
+[data-theme="custom-blue"] .meowos-confirm-btn:hover,
+body.theme-custom-blue .meowos-confirm-btn:hover {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8) !important;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4) !important;
+}
+
+[data-theme="custom-blue"] .meowos-cancel-btn,
+body.theme-custom-blue .meowos-cancel-btn {
+  background: rgba(100, 116, 139, 0.1) !important;
+  color: #334155 !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+[data-theme="custom-blue"] .meowos-cancel-btn:hover,
+body.theme-custom-blue .meowos-cancel-btn:hover {
+  background: rgba(100, 116, 139, 0.15) !important;
+  border-color: rgba(203, 213, 225, 0.7) !important;
+}
+
+[data-theme="custom-blue"] .meowos-toast,
+body.theme-custom-blue .meowos-toast {
+  background: rgba(248, 250, 252, 0.9) !important;
+  border-color: rgba(203, 213, 225, 0.3) !important;
+  color: #0f172a !important;
+}
+
+/* 通用主题适配（使用CSS变量） */
+.meowos-popup {
+  background: var(--bg-primary, rgba(255, 255, 255, 0.95)) !important;
+  border-color: var(--border-color, rgba(255, 255, 255, 0.2)) !important;
+}
+
+.meowos-title {
+  color: var(--text-primary, #333) !important;
+}
+
+.meowos-content {
+  color: var(--text-secondary, #666) !important;
+}
+
+.meowos-cancel-btn {
+  background: var(--bg-secondary, rgba(108, 117, 125, 0.1)) !important;
+  color: var(--text-primary, #666) !important;
+  border-color: var(--border-color, rgba(108, 117, 125, 0.3)) !important;
+}
+
+.meowos-toast {
+  background: var(--bg-primary, rgba(255, 255, 255, 0.9)) !important;
+  border-color: var(--border-color, rgba(255, 255, 255, 0.3)) !important;
+  color: var(--text-primary, #333) !important;
+}
+
+/* 图标颜色自定义 */
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: #28a745 !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-fix,
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #28a745 !important;
+}
+
+.swal2-icon.swal2-error {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.swal2-icon.swal2-warning {
+  border-color: #ffc107 !important;
+  color: #ffc107 !important;
+}
+
+.swal2-icon.swal2-info {
+  border-color: #17a2b8 !important;
+  color: #17a2b8 !important;
+}
+
+.swal2-icon.swal2-question {
+  border-color: #6f42c1 !important;
+  color: #6f42c1 !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .meowos-popup {
+    margin: 1rem !important;
+    max-width: calc(100% - 2rem) !important;
+  }
+  
+  .meowos-title {
+    font-size: 1.1rem !important;
+  }
+  
+  .meowos-content {
+    font-size: 0.9rem !important;
+  }
+  
+  .meowos-confirm-btn,
+  .meowos-cancel-btn {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* 动画增强 */
+.swal2-container.swal2-shown .swal2-popup {
+  animation-duration: 0.3s !important;
+}
+
+.swal2-container.swal2-shown .swal2-backdrop-show {
+  animation-duration: 0.3s !important;
+}
+
+/* 输入框样式 */
+.swal2-input {
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem !important;
+  font-size: 0.9rem !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.swal2-input:focus {
+  border-color: #4A90E2 !important;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15) !important;
+  outline: none !important;
+}
+
+[data-theme="dark"] .swal2-input,
+body.theme-dark .swal2-input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="dark"] .swal2-input:focus,
+body.theme-dark .swal2-input:focus {
+  border-color: #4A90E2 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 毛玻璃主题输入框 */
+[data-theme="glass"] .swal2-input,
+body.theme-glass .swal2-input {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #303133 !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="glass"] .swal2-input:focus,
+body.theme-glass .swal2-input:focus {
+  border-color: #4A90E2 !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 自定义蓝色主题输入框 */
+[data-theme="custom-blue"] .swal2-input,
+body.theme-custom-blue .swal2-input {
+  background: rgba(248, 250, 252, 0.8) !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="custom-blue"] .swal2-input:focus,
+body.theme-custom-blue .swal2-input:focus {
+  border-color: #1e3a8a !important;
+  background: rgba(248, 250, 252, 1) !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15) !important;
+}
+
+/* 通用输入框适配 */
+.swal2-input {
+  background: var(--bg-secondary, #ffffff) !important;
+  border-color: var(--border-color, rgba(0, 0, 0, 0.2)) !important;
+  color: var(--text-primary, #333) !important;
+}

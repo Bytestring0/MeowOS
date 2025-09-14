@@ -18,6 +18,12 @@ export interface AppManifest {
   permissions?: string[]; 
   category?: string; 
   singleton?: boolean; 
+  // 桌面图标位置信息
+  desktopPosition?: {
+    x: number;
+    y: number;
+    gridIndex?: number; // 在网格中的索引，用于排序
+  };
 }
 
 export interface WindowState {
