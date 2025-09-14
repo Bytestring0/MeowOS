@@ -1,0 +1,17 @@
+{
+  "id": "serial-bluetooth",
+  "name": "串口蓝牙调试助手",
+  "version": "1.0.0",
+  "description": "用于串口和蓝牙设备调试的通信工具",
+  "icon": "/icons/serial-bluetooth.svg",
+  "entry": "SerialBluetoothApp",
+    "type": "app",
+  "defaultSize": {
+    "width": 800,
+    "height": 600
+  },
+  "minSize": {
+    "width": 600,
+    "height": 400
+  }
+}
