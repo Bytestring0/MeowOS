@@ -3,6 +3,22 @@
     <div class="taskbar-left">
       <div class="logo" @click="openLauncher">MeowOS</div>
     </div>
+    <div class="taskbar-center">
+      <!-- 中央系统组件 -->
+      <div 
+        v-for="component in centerSystemComponents"
+        :key="component.id"
+        class="taskbar-system-component"
+        :style="{
+          order: component.manifest.systemComponent?.position.order || 0
+        }"
+      >
+        <component 
+          :is="systemComponentRegistry[component.manifest.entry]" 
+          :component-state="component"
+        />
+      </div>
+    </div>
     <div class="taskbar-windows">
       <div v-for="item in items" :key="item.windowId" class="taskbar-item" :class="{active:item.isActive, minimized:item.isMinimized}" @click="toggle(item.windowId)" @dblclick="restore(item.windowId)">
         <img :src="item.icon" :alt="item.title" />
@@ -10,14 +26,25 @@
       </div>
     </div>
     <div class="taskbar-right">
-      <button class="quick-btn" @click="openApp('system-theme')">主题</button>
-      <button class="quick-btn" @click="openApp('system-wallpaper')">壁纸</button>
-      <button class="quick-btn" @click="openApp('system-terminal')">终端</button>
+      <!-- 右侧系统组件 -->
+      <div 
+        v-for="component in rightSystemComponents"
+        :key="component.id"
+        class="taskbar-system-component"
+        :style="{
+          order: component.manifest.systemComponent?.position.order || 0
+        }"
+      >
+        <component 
+          :is="systemComponentRegistry[component.manifest.entry]" 
+          :component-state="component"
+        />
+      </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, shallowRef } from 'vue';
 import { system } from '../api/system';
 
 const config = system.config;
@@ -25,12 +52,61 @@ const items = computed(()=> system.getTaskbarItems());
 const position = computed(()=> config.taskbar.position);
 const taskbarStyle = computed(()=> ({ height: config.taskbar.height + 'px' }));
 
+// 系统组件注册表
+const systemComponentRegistry = shallowRef<Record<string, any>>({});
+
+// 获取任务栏系统组件，按placement分组
+const centerSystemComponents = computed(() => 
+  system.getSystemComponents().filter(c => 
+    c.manifest.systemComponent?.position.type === 'taskbar' &&
+    c.manifest.systemComponent?.position.placement === 'center'
+  )
+);
+
+const rightSystemComponents = computed(() => 
+  system.getSystemComponents().filter(c => 
+    c.manifest.systemComponent?.position.type === 'taskbar' &&
+    (c.manifest.systemComponent?.position.placement === 'right' || 
+     !c.manifest.systemComponent?.position.placement) // 默认为right
+  )
+);
+
+// 获取任务栏系统组件（保持向后兼容）
+const taskbarSystemComponents = computed(() => 
+  system.getSystemComponents().filter(c => 
+    c.manifest.systemComponent?.position.type === 'taskbar'
+  )
+);
+
+// 加载系统组件模块
+async function loadSystemComponentModules() {
+  const modules = import.meta.glob('../../system-components/*/*.vue', { eager: true });
+  
+  for (const path in modules) {
+    const mod: any = modules[path];
+    const component = mod.default || mod;
+    
+    // 从路径提取组件名
+    const pathParts = path.split('/');
+    const fileName = pathParts[pathParts.length - 1];
+    const componentName = fileName.replace('.vue', '');
+    
+    systemComponentRegistry.value[componentName] = component;
+  }
+  
+  console.log('Loaded taskbar system components:', Object.keys(systemComponentRegistry.value));
+}
+
 function toggle(id:string){ system.toggleMinimize(id); }
 function restore(id:string){ system.focusWindow(id); }
 function openApp(id:string){ system.openApp(id); }
 function openLauncher(){
   console.log("logo clicked");
 }
+
+onMounted(() => {
+  loadSystemComponentModules();
+});
 </script>
 <style scoped>
 .taskbar {
@@ -56,6 +132,14 @@ function openLauncher(){
 .taskbar-left {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.taskbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
 }
 
 .taskbar-windows {
@@ -65,6 +149,7 @@ function openLauncher(){
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  justify-content: flex-start;
 }
 
 .taskbar-windows::-webkit-scrollbar {
@@ -73,6 +158,7 @@ function openLauncher(){
 
 .taskbar-right {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -147,23 +233,12 @@ function openLauncher(){
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
 }
 
-.quick-btn {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all var(--animation-duration) ease;
-  user-select: none;
-}
-
-.quick-btn:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  transform: translateY(-1px);
+/* 任务栏系统组件样式 */
+.taskbar-system-component {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0 4px;
 }
 
 /* 响应式调整 */
@@ -182,11 +257,6 @@ function openLauncher(){
   .brand {
     padding: 6px 12px;
     font-size: 12px;
-  }
-  
-  .quick-btn {
-    padding: 4px 8px;
-    font-size: 11px;
   }
 }
 </style>

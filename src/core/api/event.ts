@@ -89,5 +89,9 @@ export enum SystemEvents {
   IconOrderChanged = 'iconOrderChanged',
   DesktopLayoutSaved = 'desktopLayoutSaved',
   DesktopLayoutLoaded = 'desktopLayoutLoaded',
+  // 系统组件相关事件
+  SystemComponentStarted = 'systemComponentStarted',
+  SystemComponentStopped = 'systemComponentStopped',
+  SystemComponentMoved = 'systemComponentMoved',
 }
 export const UserEvents: { [key: string]: string } = {};

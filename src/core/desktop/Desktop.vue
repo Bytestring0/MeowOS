@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop no-select" :style="desktopStyle" @contextmenu="handleDesktopContextMenu" @click="clearSelection">
+  <div class="desktop no-select" :style="desktopStyle" @click="clearSelection">
     <div class="desktop-grid" :style="gridStyle" @dragover.prevent @drop.prevent>
       <div 
         v-for="(app, index) in sortedVisibleApps" 
@@ -7,7 +7,6 @@
         class="desktop-icon" 
         :class="{ 'dragging': dragState.draggedAppId === app.id, 'drag-over': dragState.dragOverIndex === index }"
         @dblclick="openApp(app.id)"
-        @contextmenu.stop="handleAppContextMenu($event, app)"
         @mousedown="startDrag($event, app, index)"
         @dragover.prevent="handleDragOver($event, index)"
         @drop="handleDrop($event, index)"
@@ -21,25 +20,53 @@
         <span class="app-name">{{ app.name }}</span>
       </div>
     </div>
+    <!-- 桌面系统组件 -->
+    <div 
+      v-for="component in desktopSystemComponents" 
+      :key="component.id"
+      class="desktop-system-component"
+      :style="{
+        position: 'absolute',
+        left: component.position.x + 'px',
+        top: component.position.y + 'px',
+        width: component.size.width + 'px',
+        height: component.size.height + 'px',
+        zIndex: component.zIndex,
+        opacity: component.manifest.systemComponent?.display?.opacity || 1
+      }"
+      @mousedown="startComponentDrag(component, $event)"
+    >
+      <component 
+        :is="systemComponentRegistry[component.manifest.entry]" 
+        :component-state="component"
+      />
+    </div>
     <Taskbar />
-    <ContextMenu />
   </div>
   <div class="wallpaper-animation" :style="desktopStyle2">
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, reactive } from 'vue';
+import { computed, onMounted, onUnmounted, ref, reactive, shallowRef } from 'vue';
 import { system } from '../api/system';
-import { showContextMenu, contextMenuAPI } from '../api/contextmenu';
 import type { AppManifest } from '../types/system';
 import Taskbar from './Taskbar.vue';
-import ContextMenu from './ContextMenu.vue';
 import { eventBus, SystemEvents } from '../api/event';
 import { animationService } from '../api/animationService';
 
 const apps = computed(() => system.listApps());
 const gridSize = ref({ columns: 10, rows: 1 });
+
+// 系统组件注册表
+const systemComponentRegistry = shallowRef<Record<string, any>>({});
+
+// 获取桌面系统组件
+const desktopSystemComponents = computed(() => 
+  system.getSystemComponents().filter(c => 
+    c.manifest.systemComponent?.position.type === 'desktop'
+  )
+);
 
 // 拖拽状态
 const dragState = reactive({
@@ -47,6 +74,14 @@ const dragState = reactive({
   draggedAppIndex: -1,
   dragOverIndex: -1,
   isDragging: false,
+});
+
+// 系统组件拖拽状态
+const componentDragState = reactive({
+  isDragging: false,
+  draggedComponent: null as any,
+  startPosition: { x: 0, y: 0 },
+  startMousePosition: { x: 0, y: 0 }
 });
 
 // 按位置排序的可见应用
@@ -234,6 +269,9 @@ function reorderApps(fromIndex: number, toIndex: number) {
 }
 
 onMounted(() => {
+  // 加载系统组件模块
+  loadSystemComponentModules();
+  
   // 壁纸变更事件
   eventBus.on(SystemEvents.WallpaperChanged, (oldVal: string, newVal: string) => {
     // 设置旧壁纸到动画容器
@@ -256,8 +294,6 @@ onMounted(() => {
     const newEl = document.querySelector('.desktop') as HTMLElement              // 显示新壁纸
     
     if (oldEl && newEl) {
-      console.log('触发壁纸更换动画', oldVal, newVal);
-      
       const duration = animationService.animateWallpaperChange(oldEl, newEl);
       
     }
@@ -287,6 +323,9 @@ onMounted(() => {
   eventBus.on(SystemEvents.DesktopLayoutLoaded, (data) => {
     console.log('桌面布局已加载:', data);
   });
+
+  // 加载系统组件模块
+  loadSystemComponentModules();
 })
 
 // 组件卸载时清理事件监听器
@@ -298,67 +337,78 @@ onUnmounted(() => {
   eventBus.clear(SystemEvents.IconOrderChanged);
   eventBus.clear(SystemEvents.DesktopLayoutSaved);
   eventBus.clear(SystemEvents.DesktopLayoutLoaded);
+  
+  // 清理系统组件拖拽事件监听器
+  document.removeEventListener('mousemove', handleComponentDragMove);
+  document.removeEventListener('mouseup', handleComponentDragEnd);
 })
 
 // 桌面右键菜单
-function handleDesktopContextMenu(event: MouseEvent) {
-  event.preventDefault();
-
-  const menuItems = contextMenuAPI.createDesktopContextMenu({
-    onRefresh: () => {
-      // 刷新桌面
-      console.log('刷新桌面');
-    },
-    onPersonalize: () => {
-      // 打开个性化设置
-      system.openApp('system-theme');
-    },
-    onDisplaySettings: () => {
-      // 打开显示设置
-      system.openApp('system-wallpaper');
-    },
-    onSystemInfo: () => {
-      // 打开系统信息
-      console.log('系统信息');
-    }
-  });
-
-  showContextMenu({
-    x: event.clientX,
-    y: event.clientY,
-    items: menuItems
-  });
-}
-
-// 应用右键菜单
-function handleAppContextMenu(event: MouseEvent, app: AppManifest) {
-  event.preventDefault();
-
-  showContextMenu({
-    x: event.clientX,
-    y: event.clientY,
-    items: [
-      {
-        label: '打开',
-        icon: '🚀',
-        action: () => openApp(app.id)
-      },
-      { type: 'separator' },
-      {
-        label: '属性',
-        icon: '⚙️',
-        action: () => {
-          console.log('应用属性:', app);
-        }
-      }
-    ]
-  });
-}
-
 // 清除选择
 function clearSelection() {
   // 取消所有选中状态，这里可以扩展
   console.log('清除选择');
+}
+
+// 系统组件拖拽功能
+function startComponentDrag(component: any, event: MouseEvent) {
+  if (!component.manifest.systemComponent?.display?.draggable) return;
+  
+  event.preventDefault();
+  
+  componentDragState.isDragging = true;
+  componentDragState.draggedComponent = component;
+  componentDragState.startPosition = { ...component.position };
+  componentDragState.startMousePosition = { x: event.clientX, y: event.clientY };
+  
+  document.addEventListener('mousemove', handleComponentDragMove);
+  document.addEventListener('mouseup', handleComponentDragEnd);
+}
+
+function handleComponentDragMove(event: MouseEvent) {
+  if (!componentDragState.isDragging || !componentDragState.draggedComponent) return;
+  
+  const deltaX = event.clientX - componentDragState.startMousePosition.x;
+  const deltaY = event.clientY - componentDragState.startMousePosition.y;
+  
+  const newPosition = {
+    x: componentDragState.startPosition.x + deltaX,
+    y: componentDragState.startPosition.y + deltaY
+  };
+  
+  // 限制在屏幕范围内
+  newPosition.x = Math.max(0, Math.min(newPosition.x, window.innerWidth - componentDragState.draggedComponent.size.width));
+  newPosition.y = Math.max(0, Math.min(newPosition.y, window.innerHeight - componentDragState.draggedComponent.size.height));
+  
+  componentDragState.draggedComponent.position = newPosition;
+  system.updateSystemComponentPosition(componentDragState.draggedComponent.id, newPosition);
+}
+
+function handleComponentDragEnd() {
+  componentDragState.isDragging = false;
+  componentDragState.draggedComponent = null;
+  
+  document.removeEventListener('mousemove', handleComponentDragMove);
+  document.removeEventListener('mouseup', handleComponentDragEnd);
+}
+
+// 加载系统组件模块
+async function loadSystemComponentModules() {
+  const modules = import.meta.glob('../../system-components/*/*.vue', { eager: true });
+  
+  for (const path in modules) {
+    const mod: any = modules[path];
+    const component = mod.default || mod;
+    
+    // 从路径提取组件名
+    const pathParts = path.split('/');
+    const fileName = pathParts[pathParts.length - 1];
+    const componentName = fileName.replace('.vue', '');
+    
+    systemComponentRegistry.value[componentName] = component;
+  }
+  
+  console.log('Loaded system components:', Object.keys(systemComponentRegistry.value));
 }
 
 </script>
@@ -445,5 +495,16 @@ function clearSelection() {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+}
+
+/* 桌面系统组件样式 */
+.desktop-system-component {
+  pointer-events: auto;
+  transition: transform 0.2s ease;
+  cursor: grab;
+}
+
+.desktop-system-component:active {
+  cursor: grabbing;
 }
 </style>

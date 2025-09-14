@@ -1,0 +1,31 @@
+{
+  "id": "system-volume",
+  "name": "音量控制",
+  "description": "显示和控制音量的系统组件",
+  "version": "1.0.0",
+  "icon": "/icons/volume.svg",
+  "type": "system-component",
+  "entry": "VolumeComponent",
+  "autoStart": true,
+  "isSystemComponent": true,
+  "showOnDesktop": false,
+  "systemComponent": {
+    "position": {
+      "type": "taskbar",
+      "placement": "right",
+      "order": 1
+    },
+    "display": {
+      "always": true,
+      "draggable": false,
+      "opacity": 1
+    },
+    "size": {
+      "width": 100,
+      "height": 40
+    },
+    "behavior": {
+      "clickThrough": false
+    }
+  }
+}

@@ -7,7 +7,8 @@ import type {
   TaskbarItem,
   ThemeDefinition,
   WallpaperSource,
-  UserConfig
+  UserConfig,
+  SystemComponentState
 } from '../types/system';
 import { storage } from './storage';
 import { eventBus, SystemEvents } from './event';
@@ -28,6 +29,8 @@ class SystemService {
   private nextZIndex = 1000;
   private userConfig: UserConfig = {};
   private initialized = false;
+  // 系统组件状态
+  private systemComponents = reactive<SystemComponentState[]>([]);
 
   constructor() {
     this.init();
@@ -42,6 +45,7 @@ class SystemService {
     
     await this.loadSettings();
     await this.loadApps();
+    await this.loadSystemComponents(); // 加载系统组件
     
     // 应用用户配置的默认主题
     if (userConfig.defaultTheme) {
@@ -88,14 +92,29 @@ class SystemService {
   private getDefaultSystemApps(): AppManifest[] {
     // 扫描 system-apps 下所有 manifest.json
     const modules = import.meta.glob('../../system-apps/*/manifest.json', { eager: true });
+    
+    // 扫描 system-components 下所有 manifest.json
+    const componentModules = import.meta.glob('../../system-components/*/manifest.json', { eager: true });
 
     const apps: AppManifest[] = [];
+    
+    // 处理普通应用
     for (const path in modules) {
       const mod: any = modules[path];
       const manifest: AppManifest = mod.default || mod;
-
       apps.push(manifest);
     }
+    
+    // 处理系统组件
+    for (const path in componentModules) {
+      const mod: any = componentModules[path];
+      const manifest: AppManifest = mod.default || mod;
+      manifest.type = 'system-component';
+      manifest.isSystemComponent = true;
+      manifest.showOnDesktop = false; // 系统组件不显示在桌面
+      apps.push(manifest);
+    }
+
     console.log('Loaded system apps:', apps);
     return apps;
   }
@@ -421,6 +440,106 @@ class SystemService {
     const defaultWallpaper = 'wallpapers/default.svg';
     this.setWallpaper(defaultWallpaper);
     return defaultWallpaper;
+  }
+
+  // 系统组件管理
+  private async loadSystemComponents() {
+    const componentApps = this.state.apps.filter(app => app.type === 'system-component');
+    
+    for (const app of componentApps) {
+      if (app.autoStart && app.systemComponent) {
+        await this.startSystemComponent(app);
+      }
+    }
+  }
+
+  public async startSystemComponent(app: AppManifest): Promise<SystemComponentState | null> {
+    if (!app.systemComponent) return null;
+    
+    // 检查是否已经启动
+    const existing = this.systemComponents.find(c => c.id === app.id);
+    if (existing) return existing;
+
+    const config = app.systemComponent;
+    let position = { x: 0, y: 0 };
+    
+    // 计算位置
+    if (config.position.type === 'desktop') {
+      if (config.position.anchor) {
+        position = this.calculateAnchorPosition(config.position.anchor, config.size);
+      } else {
+        position = { 
+          x: config.position.x || 0, 
+          y: config.position.y || 0 
+        };
+      }
+    }
+
+    const componentState: SystemComponentState = {
+      id: app.id,
+      manifest: app,
+      visible: true,
+      position,
+      size: {
+        width: typeof config.size?.width === 'number' ? config.size.width : 200,
+        height: typeof config.size?.height === 'number' ? config.size.height : 100
+      },
+      zIndex: config.display?.zIndex || this.nextZIndex++
+    };
+
+    this.systemComponents.push(componentState);
+    
+    // 发布组件启动事件
+    eventBus.emit(SystemEvents.SystemComponentStarted, componentState);
+    
+    return componentState;
+  }
+
+  public stopSystemComponent(componentId: string): boolean {
+    const index = this.systemComponents.findIndex(c => c.id === componentId);
+    if (index !== -1) {
+      const component = this.systemComponents.splice(index, 1)[0];
+      eventBus.emit(SystemEvents.SystemComponentStopped, component);
+      return true;
+    }
+    return false;
+  }
+
+  public getSystemComponents(): SystemComponentState[] {
+    return this.systemComponents;
+  }
+
+  public updateSystemComponentPosition(componentId: string, position: { x: number; y: number }) {
+    const component = this.systemComponents.find(c => c.id === componentId);
+    if (component) {
+      component.position = position;
+      eventBus.emit(SystemEvents.SystemComponentMoved, component);
+    }
+  }
+
+  private calculateAnchorPosition(anchor: string, size?: any): { x: number; y: number } {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const componentWidth = typeof size?.width === 'number' ? size.width : 200;
+    const componentHeight = typeof size?.height === 'number' ? size.height : 100;
+    
+    switch (anchor) {
+      case 'top-left':
+        return { x: 20, y: 20 };
+      case 'top-right':
+        return { x: windowWidth - componentWidth - 20, y: 20 };
+      case 'bottom-left':
+        return { x: 20, y: windowHeight - componentHeight - 80 }; // 考虑taskbar高度
+      case 'bottom-right':
+        return { x: windowWidth - componentWidth - 20, y: windowHeight - componentHeight - 80 };
+      case 'center':
+        return { 
+          x: (windowWidth - componentWidth) / 2, 
+          y: (windowHeight - componentHeight) / 2 
+        };
+      default:
+        return { x: 0, y: 0 };
+    }
   }
 }
 

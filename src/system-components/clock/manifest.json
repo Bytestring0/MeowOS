@@ -1,0 +1,31 @@
+{
+  "id": "system-clock",
+  "name": "系统时钟",
+  "description": "显示当前时间的系统组件",
+  "version": "1.0.0",
+  "icon": "/icons/clock.svg",
+  "type": "system-component",
+  "entry": "ClockComponent",
+  "autoStart": true,
+  "isSystemComponent": true,
+  "showOnDesktop": false,
+  "systemComponent": {
+    "position": {
+      "type": "taskbar",
+      "placement": "right",
+      "order": 2
+    },
+    "display": {
+      "always": true,
+      "draggable": false,
+      "opacity": 1
+    },
+    "size": {
+      "width": 120,
+      "height": 40
+    },
+    "behavior": {
+      "clickThrough": false
+    }
+  }
+}
