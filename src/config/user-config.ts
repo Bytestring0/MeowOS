@@ -385,16 +385,15 @@ export const userAnimationConfig: Partial<AnimationPreset>[] = [
     name: '自定义动画',
     description: '带有自定义样式的流畅动画',
     windowOpen: {
-      duration: 800,
+      duration: 100,
       easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       enabled: true,
     },
     windowClose: {
-      duration: 800,
+      duration: 100,
       easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       enabled: true,
       customAnimation: (element: HTMLElement) => {
-        console.log('执行窗口粒子纷飞关闭动画（Canvas炫酷版）');
 
         // 获取窗口区域
         const rect = element.getBoundingClientRect();

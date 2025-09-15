@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import Desktop from '@/core/desktop/Desktop.vue';
 import Window from '@/core/desktop/Window.vue';
+import Loading from '@/core/desktop/Loading.vue';
 import { system } from '@/core/api/system';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const windows = computed(() => system.getWindows().filter(w => !w.isHidden));
-
+const isLoading = ref<boolean>(true);
 onMounted(async () => {
   // 初始化应用主题
   system.applyTheme(system.theme);
@@ -19,12 +20,16 @@ onMounted(async () => {
     // 用户配置文件不存在，使用默认配置
     console.info('使用默认系统配置');
   }
+  const res = await fetch("https://apiv2.magecorn.com/bilicover/get?type=bv&id=1ezpnzdEiq&client=2.6.0");
+  console.log(res.json());
 });
 
 </script>
 
 <template>
-  <div class="app" :data-theme="system.theme">
+  <Loading v-if="isLoading" @finished="isLoading = false" />
+  <div v-else class="app" :data-theme="system.theme">
+    
     <Desktop />
     <Window v-for="w in windows" :key="w.id" :window="w" />
   </div>

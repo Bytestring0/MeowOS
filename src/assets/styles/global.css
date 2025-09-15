@@ -1,5 +1,6 @@
 @import './theme.css';
 @import './sweetAlert.css';
+@import 'highlight.js/styles/github.css';
 
 /* 禁用文本选择 */
 .no-select {

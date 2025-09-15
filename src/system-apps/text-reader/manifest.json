@@ -1,0 +1,10 @@
+{
+  "id": "system-text-reader",
+  "name": "文本阅读器",
+  "description": "专业的Markdown文本阅读器",
+  "version": "1.0.0",
+  "icon": "icons/notes.svg",
+  "type": "app",
+  "entry": "TextReaderApp",
+  "singleInstance": false
+}
