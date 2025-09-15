@@ -212,6 +212,8 @@ export class TerminalApp {
   clock         - 打开时钟应用
   notes         - 打开记事本
   paint         - 打开绘图板
+  docs          - 打开文件阅读器
+  reader        - 打开文本阅读器
   
 系统设置:
   theme <id>    - 切换主题 (light/dark/glass)
@@ -384,6 +386,18 @@ ${this.history.slice(-20).map((cmd, i) => `  ${this.history.length - 20 + i + 1}
       case 'paint':
         system.openApp('system-paint');
         return '正在打开绘图板...';
+      
+      case 'docs':
+      case 'documents':
+      case 'filereader':
+        system.openApp('system-file-reader');
+        return '正在打开文件阅读器...';
+      
+      case 'reader':
+      case 'textreader':
+      case 'markdown':
+        system.openApp('system-text-reader');
+        return '正在打开文本阅读器...';
       
       // 隐藏命令和彩蛋
       case 'meow':

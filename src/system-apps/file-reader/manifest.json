@@ -1,0 +1,15 @@
+{
+  "id": "system-file-reader",
+  "name": "文件阅读器",
+  "description": "浏览和管理文档文件",
+  "version": "1.0.0",
+  "icon": "icons/notes.svg",
+  "type": "app",
+  "entry": "FileReaderApp",
+  "commands": {
+    "docs": {
+      "description": "打开文件阅读器",
+      "alias": ["documents", "files"]
+    }
+  }
+}
