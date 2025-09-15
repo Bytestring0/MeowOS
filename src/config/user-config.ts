@@ -394,7 +394,6 @@ export const userAnimationConfig: Partial<AnimationPreset>[] = [
       easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       enabled: true,
       customAnimation: (element: HTMLElement) => {
-        console.log('执行窗口粒子纷飞关闭动画（Canvas炫酷版）');
 
         // 获取窗口区域
         const rect = element.getBoundingClientRect();
