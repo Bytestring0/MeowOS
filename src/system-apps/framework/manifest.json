@@ -1,0 +1,9 @@
+{
+  "id": "framework",
+  "name": "海拥游戏大全",
+  "description": "",
+  "version": "1.0.0",
+  "icon": "icons/default-app.svg",
+  "type": "app",
+  "entry": "Framework"
+}
