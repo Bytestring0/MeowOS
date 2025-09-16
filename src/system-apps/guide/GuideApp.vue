@@ -1,76 +1,89 @@
 <template>
-  <div class="card-container">
-    <div
-      v-for="(site, index) in sites"
-      :key="index"
-      class="card"
-    >
-      <!-- 图标覆盖整个卡片 -->
-      <img :src="site.icon" alt="icon" class="card-icon-full" />
+  <div class="app-container">
+    <!-- 卡片页面 -->
+    <div v-if="!selectedSite" class="card-container">
+      <div
+        v-for="site in sites"
+        :key="site.url"
+        class="card"
+        @click="openSite(site)"
+      >
+        <img :src="site.icon" alt="icon" class="card-icon-full" />
 
-      <!-- hover 信息 -->
-      <div class="card-info">
-        <!-- 左上角 SVG 装饰 -->
-        <div class="card-svg">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="12" fill="#ff6f61"/>
-          </svg>
+        <!-- 悬浮信息 -->
+        <div class="card-info">
+          <div class="card-img">
+            <!-- IMG 装饰 -->
+            <img src="./hajimi.png" alt="装饰">
+          </div>
+
+          <h3 class="card-title">{{ site.name }}</h3>
+          <div class="card-url">{{ site.url }}</div>
+          <div class="card-category">{{ site.category }}</div>
         </div>
-
-        <!-- 网站名称 -->
-        <h3 class="card-title">{{ site.name }}</h3>
-
-        <!-- 右上角网址 -->
-        <div class="card-url">{{ site.url }}</div>
-
-        <!-- 右下角分类 -->
-        <div class="card-category">{{ site.category }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const sites = [
+import { ref } from "vue";
+
+const selectedSite = ref(null);
+
+const sites = ref([
   {
-    name: "Google",
-    url: "https://www.google.com",
-    category: "搜索",
-    icon: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png"
+    name: "海拥游戏大全",
+    url: "https://peergame.cn/",
+    icon: "icons/haiyong.svg",
+    category: "摸鱼"
   },
   {
-    name: "Bing",
-    url: "https://www.bing.com",
-    category: "搜索",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/9/91/Bing_logo.svg"
+    name: "CET",
+    url: "https://www.qian-qian.xyz/cet/#/",
+    icon: "icons/CET.png",
+    category: "最！高！六！级！分！数！"
   },
   {
-    name: "GitHub",
-    url: "https://www.github.com",
-    category: "开发",
-    icon: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+    name: "猫国建设者",
+    url: "http://jsd1.2bps.cn/",
+    icon: "icons/NotoCatFace.svg",
+    category: "喵~"
   }
-];
+]);
+
+function openSite(site) {
+  window.open(site.url, "_blank");
+}
+
+function closeSite() {
+  selectedSite.value = null;
+}
 </script>
 
 <style scoped>
-/* 卡片容器：横向排列 */
+.app-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* 横向排列容器 */
 .card-container {
   display: flex;
-  flex-wrap: wrap;           /* 宽度不足时换行 */
-  justify-content: flex-start; /* 从左开始排列 */
-  gap: 20px;                 /* 卡片间距 */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
   margin-top: 20px;
   padding: 10px;
 }
 
-/* 卡片样式 */
+/* 卡片 */
 .card {
   position: relative;
-  width: 28%;                /* 横向宽度自适应 */
+  width: 28%;
   min-width: 260px;
   max-width: 380px;
-  aspect-ratio: 16/9;        /* 横板比例 */
+  aspect-ratio: 16/9;
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -83,11 +96,13 @@ const sites = [
   box-shadow: 0 16px 32px rgba(0,0,0,0.3);
 }
 
-/* 图标覆盖整个卡片 */
+/* 图标全覆盖 */
 .card-icon-full {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 60%;           /* 占卡片宽度的 60%，可调 */
+  height: auto;         /* 高度自适应 */
+  object-fit: contain;  /* 保持图标比例，不裁切 */
+  margin: auto;         /* 居中 */
+  display: block;
   transition: transform 0.5s ease;
 }
 
@@ -103,7 +118,6 @@ const sites = [
   width: 100%;
   height: 100%;
   padding: 15px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -118,12 +132,19 @@ const sites = [
   transform: translateX(0);
 }
 
-/* 左上角 SVG */
-.card-svg {
+/* 左上角装饰图片 */
+.card-img {
   position: absolute;
   top: 12px;
   left: 12px;
 }
+
+.card-img img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
 
 /* 网站名称 */
 .card-title {
@@ -161,4 +182,42 @@ const sites = [
   font-size: 14px;
 }
 
+/* iframe 页面 */
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.site-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* 返回按钮 */
+.back-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+*{
+  overflow: scroll;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar{
+  display: none;
+}
 </style>
