@@ -68,6 +68,8 @@ class SystemService {
 
   private async loadApps() {
     this.state.apps = this.getDefaultSystemApps();
+    // 加载自定义应用
+    await this.loadCustomApps();
     // 初始化图标位置
     this.initializeIconPositions();
   }
@@ -302,6 +304,13 @@ class SystemService {
       console.error(`App not found: ${appId}`);
       return null;
     }
+
+    // 检查是否是需要在新标签页打开的自定义应用
+    if (app.settings?.openInNewTab && app.settings?.url) {
+      window.open(app.settings.url, '_blank', 'noopener,noreferrer');
+      return null; // 不创建窗口
+    }
+
     if (app.singleInstance) {
       const existing = this.state.windows.find(w => w.id.startsWith(appId));
       if (existing) {
@@ -543,6 +552,70 @@ class SystemService {
         };
       default:
         return { x: 0, y: 0 };
+    }
+  }
+
+  // 自定义应用管理
+  async addCustomApp(manifest: AppManifest) {
+    // 检查是否已存在
+    const existingIndex = this.state.apps.findIndex(app => app.id === manifest.id);
+    if (existingIndex !== -1) {
+      // 更新现有应用
+      this.state.apps[existingIndex] = manifest;
+    } else {
+      // 添加新应用
+      this.state.apps.push(manifest);
+    }
+    
+    // 保存到持久存储
+    await this.saveCustomApps();
+    
+    // 发布事件
+    eventBus.emit(SystemEvents.AppAdded, manifest);
+  }
+
+  async removeCustomApp(appId: string) {
+    const index = this.state.apps.findIndex(app => app.id === appId);
+    if (index !== -1) {
+      const removedApp = this.state.apps.splice(index, 1)[0];
+      
+      // 关闭相关窗口
+      this.state.windows = this.state.windows.filter(w => !w.id.startsWith(appId));
+      
+      // 保存到持久存储
+      await this.saveCustomApps();
+      
+      // 发布事件
+      eventBus.emit(SystemEvents.AppRemoved, removedApp);
+      
+      return true;
+    }
+    return false;
+  }
+
+  private async saveCustomApps() {
+    try {
+      const customApps = this.state.apps.filter(app => app.category === 'custom');
+      await storage.set('system-custom-apps', customApps);
+    } catch (error) {
+      console.error('保存自定义应用失败:', error);
+    }
+  }
+
+  private async loadCustomApps() {
+    try {
+      const customApps = await storage.get('system-custom-apps');
+      if (customApps && Array.isArray(customApps)) {
+        // 将自定义应用合并到应用列表中
+        const existingIds = new Set(this.state.apps.map(app => app.id));
+        customApps.forEach(app => {
+          if (!existingIds.has(app.id)) {
+            this.state.apps.push(app);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('加载自定义应用失败:', error);
     }
   }
 }

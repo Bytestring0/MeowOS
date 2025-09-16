@@ -77,6 +77,8 @@ export enum SystemEvents {
   ThemeChanged = 'themeChanged',
   AppLoaded = 'appLoaded',
   AppUnloaded = 'appUnloaded',
+  AppAdded = 'appAdded',
+  AppRemoved = 'appRemoved',
   WindowOpened = 'windowOpened',
   WindowClosed = 'windowClosed',
   WindowFocused = 'windowFocused',

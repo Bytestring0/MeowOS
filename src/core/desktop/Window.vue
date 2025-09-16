@@ -44,7 +44,10 @@
     </div>
     
     <div class="window-content">
-      <component :is="appRegistry[window.component]" />
+      <component 
+        :is="appRegistry[window.component]" 
+        :window-state="window"
+      />
     </div>
 
     <!-- 调整大小手柄 -->

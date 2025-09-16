@@ -1,0 +1,12 @@
+{
+  "id": "system-app-creator",
+  "name": "新增网页",
+  "version": "1.0.0",
+  "description": "创建自定义网页应用",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSIxMiIgZmlsbD0iIzRBOTBFMiIvPgogIDxyZWN0IHg9IjIyIiB5PSIxMiIgd2lkdGg9IjQiIGhlaWdodD0iMjQiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPgogIDxyZWN0IHg9IjEyIiB5PSIyMiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K",
+  "entry": "AppCreatorApp",
+  "category": "utility",
+  "type": "app",
+  "singleInstance": true,
+  "permissions": ["storage", "network"]
+}
