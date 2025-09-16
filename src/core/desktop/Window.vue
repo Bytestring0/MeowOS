@@ -14,7 +14,8 @@
       class="window"
       :class="{ 
         maximized: window.isMaximized,
-        'window-animating': isAnimating
+        'window-animating': isAnimating,
+        pinned: window.isPinned
       }"
       :style="{
         left: window.isMaximized ? '0px' : `${window.position.x}px`,
@@ -35,6 +36,7 @@
         <span>{{ window.title }}</span>
       </div>
       <div class="window-controls">
+        <button class="control pin" :class="{ active: window.isPinned }" @click="togglePin" title="置顶">📌</button>
         <button class="control minimize" @click="minimize">─</button>
         <button class="control maximize" @click="maximize">□</button>
         <button class="control close" @click="close">×</button>
@@ -78,6 +80,11 @@
   width: 100% !important;
   height: 100% !important;
   border-radius: 0;
+}
+
+.window.pinned {
+  border: 2px solid rgba(255, 165, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(255, 165, 0, 0.2);
 }
 
 .window-header {
@@ -128,6 +135,19 @@
 .control.close:hover {
   background: var(--danger-color);
   color: white;
+}
+
+.control.pin {
+  font-size: 14px;
+}
+
+.control.pin:hover {
+  background: rgba(255, 165, 0, 0.2);
+}
+
+.control.pin.active {
+  background: rgba(255, 165, 0, 0.3);
+  color: #ff8c00;
 }
 
 .window-content {

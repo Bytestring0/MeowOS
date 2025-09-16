@@ -273,6 +273,7 @@ class SystemService {
       isMinimized: false,
       isMaximized: false,
       zIndex: this.nextZIndex++,
+      isPinned: false, // 初始化置顶状态为false
     };
   }
 
@@ -330,7 +331,10 @@ class SystemService {
   focusWindow(windowId: string) {
     const w = this.state.windows.find(w => w.id === windowId);
     if (w) {
-      w.zIndex = this.nextZIndex++;
+      // 如果窗口没有被置顶，则分配新的zIndex
+      if (!w.isPinned) {
+        w.zIndex = this.nextZIndex++;
+      }
       w.isMinimized = false;
       w.isHidden = false;
       eventBus.emit(SystemEvents.WindowFocused, w);

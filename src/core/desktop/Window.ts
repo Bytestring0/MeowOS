@@ -106,6 +106,21 @@ export default defineComponent({
 
     };
 
+    // 置顶功能
+    const togglePin = () => {
+      props.window.isPinned = !props.window.isPinned;
+      
+      if (props.window.isPinned) {
+        // 置顶：设置一个很高的zIndex
+        props.window.zIndex = 9999;
+      } else {
+        // 取消置顶：重新计算正常的zIndex
+        system.focusWindow(props.window.id);
+      }
+      
+      eventBus.emit(SystemEvents.WindowFocused, props.window);
+    };
+
     // 拖拽相关
     const startDrag = (e: MouseEvent) => {
       if (props.window.isMaximized) return;
@@ -138,12 +153,18 @@ export default defineComponent({
 
     // 调整大小相关
     const currentResizeDirection = ref<string>('');
+    const resizeStartMouse = ref({ x: 0, y: 0 });
+    const resizeStartSize = ref({ width: 0, height: 0 });
+    const resizeStartPos = ref({ x: 0, y: 0 });
     
     const startResize = (e: MouseEvent, direction: string = 'se') => {
       if (props.window.isMaximized) return;
       
       isResizing.value = true;
       currentResizeDirection.value = direction;
+      resizeStartMouse.value = { x: e.clientX, y: e.clientY };
+      resizeStartSize.value = { width: props.window.size.width, height: props.window.size.height };
+      resizeStartPos.value = { x: props.window.position.x, y: props.window.position.y };
       document.addEventListener('mousemove', onResize);
       document.addEventListener('mouseup', stopResize);
     };
@@ -151,35 +172,52 @@ export default defineComponent({
     const onResize = (e: MouseEvent) => {
       if (!isResizing.value || !windowRef.value) return;
 
-      const rect = windowRef.value.getBoundingClientRect();
       const direction = currentResizeDirection.value;
+      const deltaX = e.clientX - resizeStartMouse.value.x;
+      const deltaY = e.clientY - resizeStartMouse.value.y;
       
-      let newWidth = props.window.size.width;
-      let newHeight = props.window.size.height;
-      let newX = props.window.position.x;
-      let newY = props.window.position.y;
+      let newWidth = resizeStartSize.value.width;
+      let newHeight = resizeStartSize.value.height;
+      let newX = resizeStartPos.value.x;
+      let newY = resizeStartPos.value.y;
 
       // 根据方向调整大小和位置
       if (direction.includes('e')) {
-        newWidth = e.clientX - rect.left;
+        newWidth = resizeStartSize.value.width + deltaX;
       }
       if (direction.includes('s')) {
-        newHeight = e.clientY - rect.top;
+        newHeight = resizeStartSize.value.height + deltaY;
       }
       if (direction.includes('w')) {
-        const deltaX = e.clientX - rect.left;
-        newWidth = props.window.size.width - deltaX;
-        newX = props.window.position.x + deltaX;
+        newWidth = resizeStartSize.value.width - deltaX;
+        newX = resizeStartPos.value.x + deltaX;
       }
       if (direction.includes('n')) {
-        const deltaY = e.clientY - rect.top;
-        newHeight = props.window.size.height - deltaY;
-        newY = props.window.position.y + deltaY;
+        newHeight = resizeStartSize.value.height - deltaY;
+        newY = resizeStartPos.value.y + deltaY;
       }
 
       // 限制最小尺寸
-      newWidth = Math.max(200, newWidth);
-      newHeight = Math.max(150, newHeight);
+      const minWidth = 200;
+      const minHeight = 150;
+      
+      // 对于左边缩放，如果宽度小于最小值，需要调整位置
+      if (direction.includes('w') && newWidth < minWidth) {
+        const diff = minWidth - newWidth;
+        newX = newX - diff;
+        newWidth = minWidth;
+      } else {
+        newWidth = Math.max(minWidth, newWidth);
+      }
+      
+      // 对于顶部缩放，如果高度小于最小值，需要调整位置
+      if (direction.includes('n') && newHeight < minHeight) {
+        const diff = minHeight - newHeight;
+        newY = newY - diff;
+        newHeight = minHeight;
+      } else {
+        newHeight = Math.max(minHeight, newHeight);
+      }
 
       // 应用新的尺寸和位置
       props.window.size.width = newWidth;
@@ -218,6 +256,7 @@ export default defineComponent({
       minimize,
       maximize,
       close,
+      togglePin,
       startDrag,
       startResize,
       focus,
