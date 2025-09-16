@@ -53,7 +53,7 @@ const position = computed(()=> config.taskbar.position);
 const taskbarStyle = computed(()=> ({ height: config.taskbar.height + 'px' }));
 
 // 系统组件注册表
-const systemComponentRegistry = shallowRef<Record<string, any>>({});
+const systemComponentRegistry = ref<Record<string, any>>({});
 
 // 获取任务栏系统组件，按placement分组
 const centerSystemComponents = computed(() => 
@@ -70,7 +70,6 @@ const rightSystemComponents = computed(() =>
      !c.manifest.systemComponent?.position.placement) // 默认为right
   )
 );
-
 // 获取任务栏系统组件（保持向后兼容）
 const taskbarSystemComponents = computed(() => 
   system.getSystemComponents().filter(c => 

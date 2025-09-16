@@ -1,0 +1,14 @@
+{
+  "id": "system-search",
+  "name": "搜索",
+  "version": "1.0.0",
+  "description": "全局搜索应用、文档、设置等内容",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSIxMiIgZmlsbD0iIzRBOTBFMiIvPgogIDxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjgiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Im0yOCAyOCA0IDQiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg==",
+  "type": "app",
+  "entry": "SearchApp",
+  "category": "utility",
+  "singleInstance": true,
+  "showOnDesktop": true,
+  "autoStart": false,
+  "permissions": ["storage", "system"]
+}

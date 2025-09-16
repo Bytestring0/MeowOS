@@ -20,8 +20,6 @@ onMounted(async () => {
     // 用户配置文件不存在，使用默认配置
     console.info('使用默认系统配置');
   }
-  const res = await fetch("https://apiv2.magecorn.com/bilicover/get?type=bv&id=1ezpnzdEiq&client=2.6.0");
-  console.log(res.json());
 });
 
 </script>

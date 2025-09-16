@@ -60,6 +60,7 @@ function toggleFormat() {
 onMounted(() => {
   updateTime();
   timeInterval = setInterval(updateTime, 1000);
+  console.log('ClockComponent mounted with state:', props.componentState);
 });
 
 onUnmounted(() => {
