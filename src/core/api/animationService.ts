@@ -313,14 +313,41 @@ class AnimationService {
     const translateX = targetRect.left - elementRect.left;
     const translateY = targetRect.bottom - elementRect.top;
 
-    return this.animateElement(element, 'windowMinimize', [
+    const animation = this.animateElement(element, 'windowMinimize', [
       {
         opacity: 1,
         transform: 'scale(1) translate(0px, 0px)',
       },
       {
-        opacity: 0.3,
+        opacity: 0,
         transform: `scale(${scaleX}, ${scaleY}) translate(${translateX}px, ${translateY}px)`,
+      },
+    ]);
+
+    // 动画完成后，重置元素的变换状态，让CSS接管显示控制
+    animation.addEventListener('finish', () => {
+      element.style.transform = '';
+      element.style.opacity = '';
+    });
+
+    return animation;
+  }
+
+  // 窗口恢复动画（从最小化状态恢复）
+  animateWindowRestore(element: HTMLElement): Animation {
+    // 先重置CSS控制，让元素可见
+    element.style.visibility = 'visible';
+    element.style.opacity = '1';
+    element.style.pointerEvents = 'auto';
+
+    return this.animateElement(element, 'windowOpen', [
+      {
+        opacity: 0,
+        transform: 'scale(0.9)',
+      },
+      {
+        opacity: 1,
+        transform: 'scale(1)',
       },
     ]);
   }

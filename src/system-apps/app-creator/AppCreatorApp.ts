@@ -2,7 +2,7 @@ import { defineComponent, ref, reactive, onMounted } from 'vue';
 import { storage } from '../../core/api/storage';
 import { system } from '../../core/api/system';
 import type { AppManifest } from '../../core/types/system';
-
+import Swal from 'sweetalert2';
 export interface CustomAppData {
   id: string;
   name: string;
@@ -148,12 +148,12 @@ export default defineComponent({
         formData.url = '';
         formData.description = '';
         isCreating.value = false;
-        
-        alert('应用创建成功！');
-        
+
+        Swal.fire('应用创建成功！');
+
       } catch (error) {
         console.error('创建应用失败:', error);
-        alert('创建应用失败，请重试');
+        Swal.fire('创建应用失败，请重试');
       } finally {
         isLoading.value = false;
       }

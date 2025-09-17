@@ -4,7 +4,8 @@ import Window from '@/core/desktop/Window.vue';
 import Loading from '@/core/desktop/Loading.vue';
 import { system } from '@/core/api/system';
 import { computed, onMounted, ref } from 'vue';
-
+import { ApiFetch } from './utils';
+import fetchJsonp from 'fetch-jsonp';
 const windows = computed(() => system.getWindows().filter(w => !w.isHidden));
 const isLoading = ref<boolean>(true);
 onMounted(async () => {
@@ -21,7 +22,8 @@ onMounted(async () => {
     console.info('使用默认系统配置');
   }
 });
-
+// const res = await fetchJsonp("https://api.paugram.com/wallpaper/");
+// console.log(res);
 </script>
 
 <template>
@@ -42,23 +44,23 @@ onMounted(async () => {
   width: 100vw;
   height: 100vh;
   position: relative;
-  user-select: none;
+  /* user-select: none;
   /* 禁用用户选择 */
-  -webkit-user-select: none;
+  /* -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
+  -ms-user-select: none; */
 }
 
 /* 全局禁用文本选择蓝色高亮 */
 * {
   /* 火狐 */
-  -moz-user-select: none;
+  /* -moz-user-select: none;
   /* Safari 和 欧朋 */
-  -webkit-user-select: none;
+  /* -webkit-user-select: none; */
   /* IE10+ and Edge */
-  -ms-user-select: none;
+  /* -ms-user-select: none; */
   /* Standard syntax 标准语法(谷歌) */
-  user-select: none;
+  /* user-select: none; */
 }
 
 *::selection {

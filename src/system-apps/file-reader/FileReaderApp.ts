@@ -1,11 +1,13 @@
 import { defineComponent, ref, onMounted, computed } from 'vue';
 import { documentSystem } from '../../core/api/documents';
 import { system } from '../../core/api/system';
+import { fileReaderConfig } from './config';
 import type { DocumentItem } from '../../core/api/documents';
 
 export default defineComponent({
   name: 'FileReaderApp',
   setup() {
+    const getFolderCover = computed(() => fileReaderConfig.getFolderCover());
     const currentPath = ref('/');
     const documents = ref<DocumentItem[]>([]);
     const searchQuery = ref('');
@@ -106,16 +108,19 @@ export default defineComponent({
 
     // 获取封面图片
     const getCoverImage = (doc: DocumentItem): string => {
-      // 为不同类别返回不同的封面图
-      const category = currentPath.value.split('/')[1] || 'default';
-      const coverMap: Record<string, string> = {
-        '开始': '/wallpapers/default.svg',
-        '教程': '/wallpapers/geometric_theme.svg', 
-        '技术文档': '/wallpapers/cyberpunk.svg',
-        '博客': '/wallpapers/pastel_circles.svg',
-        'default': '/wallpapers/glass_theme.svg'
-      };
-      return coverMap[category] || coverMap.default;
+      if (doc.type === 'directory') {
+        console.log('Folder cover URL:', fileReaderConfig.getFolderCover());
+        // 所有目录使用同一个封面图
+        return fileReaderConfig.getFolderCover();
+      } else {
+        // 检查是否是Markdown文件
+        if (doc.name.match(/\.(md|markdown)$/i)) {
+          return fileReaderConfig.getMarkdownCover();
+        } else {
+          // 非Markdown文件也使用Markdown封面图
+          return fileReaderConfig.getMarkdownCover();
+        }
+      }
     };
 
     // 获取文档摘要
@@ -163,6 +168,7 @@ export default defineComponent({
       breadcrumbs,
       stats,
       recommendedDocs,
+      getFolderCover,
       loadDocuments,
       navigateToPath,
       openDocument,

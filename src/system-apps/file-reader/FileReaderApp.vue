@@ -96,7 +96,7 @@
       <!-- 文档列表 -->
       <div class="documents-section">
         <h2 v-if="currentPath !== '/'" class="section-title">
-          {{ currentPath === '/' ? '📚 所有文档' : '📂 ' + currentPath.split('/').pop() }}
+          {{ currentPath === '/' ? ' 所有文档' : '📂 ' + currentPath.split('/').pop() }}
         </h2>
         
         <!-- 网格视图 -->
@@ -110,17 +110,10 @@
           >
             <div class="card-cover">
               <img 
-                v-if="doc.type === 'file'"
                 :src="getCoverImage(doc)" 
                 :alt="doc.name"
                 class="cover-image"
               />
-              <div 
-                v-else
-                class="folder-icon"
-              >
-                📁
-              </div>
               <div v-if="doc.type === 'file'" class="read-decoration">READ</div>
               <div class="card-overlay">
                 <div class="overlay-content">

@@ -1,0 +1,21 @@
+{
+  "id": "terminal",
+  "name": "终端",
+  "description": "类Linux终端模拟器，支持多种命令操作",
+  "version": "1.0.0",
+  "icon": "icons/terminal.svg",
+  "type": "system-app",
+  "entry": "TerminalApp",
+  "autoStart": false,
+  "resizable": true,
+  "defaultSize": {
+    "width": 800,
+    "height": 600
+  },
+  "minSize": {
+    "width": 400,
+    "height": 300
+  },
+  "category": "system",
+  "keywords": ["终端", "命令行", "terminal", "console", "shell"]
+}

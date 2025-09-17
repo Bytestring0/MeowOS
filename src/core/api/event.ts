@@ -36,7 +36,6 @@ class EventBus {
     
     this.events[event].forEach(callback => {
       try {
-        console.log(`Emitting event: ${event} with payload:`, payload);
         callback(...payload);
       } catch (error) {
         console.error(`Error in event handler for ${event}:`, error);
@@ -84,6 +83,7 @@ export enum SystemEvents {
   WindowFocused = 'windowFocused',
   WindowMinimized = 'windowMinimized',
   WindowMaximized = 'windowMaximized',
+  WindowRestored = 'windowRestored', // 新增窗口恢复事件
   // 桌面图标相关事件
   IconDragStart = 'iconDragStart',
   IconDragEnd = 'iconDragEnd',

@@ -118,8 +118,8 @@ onMounted(() => {
   backdrop-filter: var(--taskbar-backdrop-filter, blur(20px) saturate(150%));
   background: rgba(var(--taskbar-bg-rgb, 255, 255, 255), var(--taskbar-bg-alpha, 0.85));
   border: 1px solid var(--border-color);
-  padding: 0 12px;
-  gap: 16px;
+  padding: 0 10px;
+  gap: 6px;
   border-top: 1px solid var(--border-color-light);
   z-index: 9999;
   font-size: 13px;
@@ -166,7 +166,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius,10px);
   cursor: pointer;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -217,7 +217,7 @@ onMounted(() => {
 .logo {
   font-weight: 700;
   padding: 8px 16px;
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius, 10px);
   background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary, #667eea));
   opacity: 0.8;
   color: white;

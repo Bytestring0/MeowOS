@@ -56,7 +56,7 @@ export default defineComponent({
       }
       
       props.window.isMinimized = true;
-      props.window.isHidden = true;
+      // 不再设置 isHidden，让窗口保持在DOM中
       system.minimizeWindow(props.window.id);
       eventBus.emit(SystemEvents.WindowMinimized, props.window);
     };
@@ -243,6 +243,20 @@ export default defineComponent({
         animationService.animateWindowOpen(windowRef.value);
         focus();
       }
+
+      // 监听窗口恢复事件
+      const onWindowRestore = (restoredWindow: any) => {
+        if (restoredWindow.id === props.window.id && windowRef.value) {
+          animationService.animateWindowRestore(windowRef.value);
+        }
+      };
+
+      eventBus.on(SystemEvents.WindowRestored, onWindowRestore);
+
+      // 组件卸载时移除事件监听
+      onUnmounted(() => {
+        eventBus.off(SystemEvents.WindowRestored, onWindowRestore);
+      });
     });
 
     onUnmounted(() => {

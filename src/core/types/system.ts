@@ -48,6 +48,7 @@ export interface WindowState {
   isHidden?: boolean; // 最小化后窗口本身隐藏
   previousPosition?: { x: number; y: number; width: number; height: number }; // 最大化前记录
   isPinned?: boolean; // 是否置顶
+  componentState?: any; // 保存组件内部状态
 }
 
 export interface SystemState {

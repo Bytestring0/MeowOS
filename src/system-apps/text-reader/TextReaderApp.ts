@@ -26,8 +26,6 @@ export default defineComponent({
     const documentName = ref('');
     const loading = ref(false);
     const error = ref('');
-    const fontSize = ref(16);
-    const lineHeight = ref(1.6);
     const showToc = ref(true);
     const tocItems = ref<Array<{ level: number; title: string; anchor: string }>>([]);
     const readingProgress = ref(0);
@@ -95,11 +93,6 @@ export default defineComponent({
     }
 
     // 计算属性
-    const readerStyle = computed(() => ({
-      fontSize: fontSize.value + 'px',
-      lineHeight: lineHeight.value,
-    }));
-
     const progressBarStyle = computed(() => ({
       width: readingProgress.value + '%'
     }));
@@ -150,7 +143,7 @@ export default defineComponent({
         extractToc(rendered);
         estimatedReadTime.value = calculateReadTime(markdown);
         
-        // 确保DOM更新后再应用语法高亮
+        // 确保DOM更新后再应用语法高亮和复制按钮
         await nextTick();
         
         // 手动应用语法高亮到新渲染的代码块
@@ -158,6 +151,14 @@ export default defineComponent({
         codeBlocks.forEach((block) => {
           hljs.highlightElement(block as HTMLElement);
         });
+        
+        // 为代码块添加复制按钮
+        addCopyButtonsToCodeBlocks();
+        
+        // 再次调用以防万一有延迟渲染的内容
+        setTimeout(() => {
+          addCopyButtonsToCodeBlocks();
+        }, 200);
       } catch (err) {
         console.error('Markdown rendering error:', err);
         error.value = '渲染Markdown时出错: ' + (err as Error).message;
@@ -223,54 +224,143 @@ export default defineComponent({
       }
     };
 
-    // 调整字体大小
-    const adjustFontSize = (delta: number) => {
-      fontSize.value = Math.max(12, Math.min(24, fontSize.value + delta));
-      storage.setAppSetting('system-text-reader', 'fontSize', fontSize.value);
-    };
-
-    // 调整行高
-    const adjustLineHeight = (delta: number) => {
-      lineHeight.value = Math.max(1.2, Math.min(2.0, lineHeight.value + delta));
-      storage.setAppSetting('system-text-reader', 'lineHeight', lineHeight.value);
-    };
-
     // 切换目录显示
     const toggleToc = () => {
       showToc.value = !showToc.value;
       storage.setAppSetting('system-text-reader', 'showToc', showToc.value);
     };
 
-    // 导出为PDF（模拟功能）
-    const exportToPdf = () => {
-      // 这里可以集成PDF导出功能
-      alert('PDF导出功能正在开发中...');
-    };
-
-    // 打印文档
-    const printDocument = () => {
-      window.print();
-    };
-
-    // 复制内容
-    const copyContent = async () => {
+    // 复制代码块内容
+    const copyCodeBlock = async (codeElement: HTMLElement) => {
       try {
-        await navigator.clipboard.writeText(content.value);
-        alert('内容已复制到剪贴板');
+        const code = codeElement.textContent || '';
+        await navigator.clipboard.writeText(code);
+        
+        // 显示复制成功反馈
+        const btn = codeElement.parentElement?.querySelector('.copy-btn');
+        if (btn) {
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+          `;
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('copied');
+          }, 2000);
+        }
       } catch (err) {
-        console.error('复制失败:', err);
+        console.error('复制代码失败:', err);
         alert('复制失败');
       }
     };
 
+    // 切换代码块展开状态
+    const toggleCodeExpand = (pre: HTMLElement) => {
+      const isExpanded = pre.classList.contains('expanded');
+      if (isExpanded) {
+        pre.classList.remove('expanded');
+      } else {
+        pre.classList.add('expanded');
+      }
+      
+      // 更新按钮图标
+      const expandBtn = pre.querySelector('.expand-btn');
+      if (expandBtn) {
+        if (isExpanded) {
+          expandBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15,3 21,3 21,9"></polyline>
+              <polyline points="9,21 3,21 3,15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          `;
+          expandBtn.setAttribute('title', '展开');
+        } else {
+          expandBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4,14 10,14 10,20"></polyline>
+              <polyline points="20,10 14,10 14,4"></polyline>
+              <line x1="14" y1="10" x2="21" y2="3"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          `;
+          expandBtn.setAttribute('title', '收起');
+        }
+      }
+    };
+
+
+
+    // 为代码块添加按钮组
+    const addCopyButtonsToCodeBlocks = () => {
+      // 使用 setTimeout 确保 DOM 已完全渲染
+      setTimeout(() => {
+        const codeBlocks = document.querySelectorAll('.content-body pre');
+        codeBlocks.forEach((pre) => {
+          // 如果已经有按钮组，跳过
+          if (pre.querySelector('.code-actions')) return;
+          
+          // 创建按钮组容器
+          const actionsContainer = document.createElement('div');
+          actionsContainer.className = 'code-actions';
+          
+          // 展开按钮
+          const expandBtn = document.createElement('button');
+          expandBtn.className = 'expand-btn code-action-btn';
+          expandBtn.setAttribute('title', '展开');
+          expandBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15,3 21,3 21,9"></polyline>
+              <polyline points="9,21 3,21 3,15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          `;
+          expandBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCodeExpand(pre as HTMLElement);
+          };
+          
+          // 复制按钮
+          const copyBtn = document.createElement('button');
+          copyBtn.className = 'copy-btn code-action-btn';
+          copyBtn.setAttribute('title', '复制代码');
+          copyBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5,15H4a2,2 0,0 1,-2-2V4A2,2 0,0 1,4 2H15a2,2 0,0 1,2 2V5"></path>
+            </svg>
+          `;
+          copyBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const codeElement = pre.querySelector('code') as HTMLElement;
+            if (codeElement) {
+              copyCodeBlock(codeElement);
+            }
+          };
+          
+          // 放大按钮已移除
+          
+          // 组装按钮组（只包含展开和复制按钮）
+          actionsContainer.appendChild(expandBtn);
+          actionsContainer.appendChild(copyBtn);
+          
+          (pre as HTMLElement).style.position = 'relative'; // 确保父元素有相对定位
+          pre.appendChild(actionsContainer);
+        });
+      }, 100);
+    };
+
     onMounted(async () => {
       // 加载用户设置
-      const savedFontSize = await storage.getAppSetting('system-text-reader', 'fontSize');
-      const savedLineHeight = await storage.getAppSetting('system-text-reader', 'lineHeight');
       const savedShowToc = await storage.getAppSetting('system-text-reader', 'showToc');
       
-      if (savedFontSize) fontSize.value = savedFontSize;
-      if (savedLineHeight) lineHeight.value = savedLineHeight;
       if (savedShowToc !== null) showToc.value = savedShowToc;
 
       // 监听文档打开和更新事件
@@ -323,23 +413,18 @@ export default defineComponent({
       documentName,
       loading,
       error,
-      fontSize,
-      lineHeight,
       showToc,
       tocItems,
       readingProgress,
       estimatedReadTime,
-      readerStyle,
       progressBarStyle,
       loadDocument,
-      adjustFontSize,
-      adjustLineHeight,
       toggleToc,
       scrollToAnchor,
       updateReadingProgress,
-      exportToPdf,
-      printDocument,
-      copyContent
+      copyCodeBlock,
+      toggleCodeExpand,
+      addCopyButtonsToCodeBlocks
     };
   }
 });

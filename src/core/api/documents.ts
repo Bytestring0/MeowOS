@@ -46,8 +46,6 @@ class DocumentSystemAPI {
       // 创建目录结构
       for (const path in markdownFiles) {
         const relativePath = path.replace('../../documents', '');
-        console.log('Processing file:', path, '-> relativePath:', relativePath);
-        
         const parts = relativePath.split('/').filter(p => p);
         const fileName = parts.pop() || '';
         const dirPath = '/' + parts.join('/');
@@ -92,8 +90,6 @@ class DocumentSystemAPI {
           size: 0
         };
 
-        console.log('Created file item:', fileItem);
-
         if (dirPath === '/') {
           documents.push(fileItem);
         } else {
@@ -107,7 +103,6 @@ class DocumentSystemAPI {
 
       this.state.documents = documents;
       this.state.loaded = true;
-      console.log('Final document structure:', documents);
     } catch (error) {
       console.error('Failed to load documents:', error);
     }
@@ -138,10 +133,8 @@ class DocumentSystemAPI {
 
   // 获取文档内容
   async getDocumentContent(path: string): Promise<string> {
-    console.log('getDocumentContent called with path:', path);
     
     if (this.cache.has(path)) {
-      console.log('Found content in cache for:', path);
       return this.cache.get(path)!;
     }
 
@@ -153,18 +146,13 @@ class DocumentSystemAPI {
         eager: false 
       });
       
-      console.log('Available markdown files for content loading:', Object.keys(markdownFiles));
-      
       // 找到对应的文件路径 - 不需要添加.md后缀，因为path已经包含了
       const fullPath = `../../documents${path}`;
-      console.log('Looking for file at:', fullPath);
       
       const moduleLoader = markdownFiles[fullPath];
       
       if (moduleLoader) {
-        console.log('Found module loader for:', fullPath);
         const content = await moduleLoader();
-        console.log('Loaded content length:', (content as string).length);
         this.cache.set(path, content as string);
         return content as string;
       } else {

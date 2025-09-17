@@ -9,13 +9,13 @@
     @leave="onWindowLeave"
   >
     <div
-      v-show="!window.isHidden && !window.isMinimized"
       ref="windowRef"
       class="window"
       :class="{ 
         maximized: window.isMaximized,
         'window-animating': isAnimating,
-        pinned: window.isPinned
+        pinned: window.isPinned,
+        minimized: window.isMinimized
       }"
       :style="{
         left: window.isMaximized ? '0px' : `${window.position.x}px`,
@@ -26,7 +26,10 @@
         backdropFilter: 'var(--window-backdrop-filter, none)',
         background: `rgba(var(--window-bg-rgb, 255, 255, 255), var(--window-bg-alpha, 0.92))`,
         boxShadow: 'var(--box-shadow)',
-        transition: isAnimating ? `all var(--window-maximize-duration, 300ms) var(--window-maximize-easing, ease-out)` : 'none'
+        transition: isAnimating ? `all var(--window-maximize-duration, 300ms) var(--window-maximize-easing, ease-out)` : 'none',
+        visibility: window.isMinimized ? 'hidden' : 'visible',
+        opacity: window.isMinimized ? '0' : '1',
+        pointerEvents: window.isMinimized ? 'none' : 'auto'
       }"
       @mousedown="focus"
     >
@@ -83,6 +86,13 @@
   width: 100% !important;
   height: 100% !important;
   border-radius: 0;
+}
+
+.window.minimized {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.9);
 }
 
 .window.pinned {

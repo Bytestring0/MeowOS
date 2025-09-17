@@ -4,8 +4,8 @@
 
 /* 禁用文本选择 */
 .no-select {
-  user-select: none;
-  -webkit-user-select: none;
+  /* user-select: none;
+  -webkit-user-select: none; */
 }
 
 /* 全局禁用用户选择（可通过配置控制） */
@@ -13,8 +13,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  user-select: var(--user-select, none);
-  -webkit-user-select: var(--user-select, none);
+  /* user-select: var(--user-select, none);
+  -webkit-user-select: var(--user-select, none); */
 }
 
 html, body {

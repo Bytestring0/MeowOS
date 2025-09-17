@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终端测试 - MeowOS</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .terminal-wrapper {
+            height: 600px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .instructions {
+            background: #222;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h3 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+        
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+        }
+        
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>MeowOS 终端测试</h1>
+        
+        <div class="instructions">
+            <h3>🧪 测试功能列表</h3>
+            <ul>
+                <li><strong>help</strong> - 查看所有可用命令</li>
+                <li><strong>ls</strong> - 列出应用程序</li>
+                <li><strong>ls documents</strong> - 列出文档文件（使用真实API）</li>
+                <li><strong>Tab</strong> - 命令自动补全</li>
+                <li><strong>↑↓</strong> - 浏览命令历史</li>
+                <li><strong>Ctrl+L</strong> - 清屏</li>
+                <li><strong>Ctrl+C</strong> - 中断命令</li>
+                <li><strong>系统信息</strong> - sysinfo, date, uptime</li>
+                <li><strong>娱乐功能</strong> - fortune（获取名言）</li>
+                <li><strong>文本选择</strong> - 测试是否能复制终端内容</li>
+            </ul>
+        </div>
+        
+        <div class="terminal-wrapper" id="terminalContainer">
+            <!-- 终端组件将在这里挂载 -->
+        </div>
+    </div>
+    
+    <div class="status">
+        <div>状态: <span id="status">等待加载...</span></div>
+        <div>时间: <span id="time"></span></div>
+    </div>
+
+    <script>
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleTimeString();
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // 状态更新
+        document.getElementById('status').textContent = '终端已就绪';
+        
+        // 模拟终端加载完成
+        setTimeout(() => {
+            document.getElementById('status').textContent = '终端运行中';
+            document.getElementById('status').style.color = '#00ff00';
+        }, 1000);
+    </script>
+</body>
+</html>

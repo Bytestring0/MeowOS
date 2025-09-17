@@ -315,7 +315,7 @@ class SystemService {
       const existing = this.state.windows.find(w => w.id.startsWith(appId));
       if (existing) {
         existing.isMinimized = false;
-        existing.isHidden = false;
+        // 不再设置 isHidden
         existing.zIndex = this.nextZIndex++;
         return existing;
       }
@@ -340,12 +340,20 @@ class SystemService {
   focusWindow(windowId: string) {
     const w = this.state.windows.find(w => w.id === windowId);
     if (w) {
+      const wasMinimized = w.isMinimized;
+      
       // 如果窗口没有被置顶，则分配新的zIndex
       if (!w.isPinned) {
         w.zIndex = this.nextZIndex++;
       }
       w.isMinimized = false;
-      w.isHidden = false;
+      // 不再设置 isHidden，让窗口保持在DOM中
+      
+      // 如果窗口之前是最小化的，触发恢复动画
+      if (wasMinimized) {
+        eventBus.emit(SystemEvents.WindowRestored, w);
+      }
+      
       eventBus.emit(SystemEvents.WindowFocused, w);
     }
   }
@@ -353,7 +361,7 @@ class SystemService {
     const w = this.state.windows.find(w => w.id === windowId);
     if (w) {
       w.isMinimized = true;
-      w.isHidden = true;
+      // 不再设置 isHidden，让窗口保持在DOM中但通过CSS隐藏
       eventBus.emit(SystemEvents.WindowMinimized, w);
     }
   }
@@ -405,7 +413,7 @@ class SystemService {
       appId: w.id.split('-')[0],
       title: w.title,
       icon: w.icon,
-      isActive: !w.isMinimized && !w.isHidden,
+      isActive: !w.isMinimized, // 只要窗口没有最小化就认为是活动的
       isMinimized: w.isMinimized,
     }));
   }
