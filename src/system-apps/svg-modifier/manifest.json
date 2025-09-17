@@ -1,0 +1,9 @@
+{
+  "id": "system-svgmodifier",
+  "name": "svg文件编辑器",
+  "description": "创建或编辑svg文件",
+  "version": "1.0.0",
+  "icon": "icons/default-app.svg",
+  "type": "app",
+  "entry": "SvgModifierApp"
+}
