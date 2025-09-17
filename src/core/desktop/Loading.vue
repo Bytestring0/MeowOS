@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       isFinishing: false,
-      fullText: 'meowOS',
+      fullText: 'MeowOS',
       typedText: '',
       typingInterval: null,
     };
@@ -53,8 +53,8 @@ export default {
       // 在淡出动画结束后触发事件
       setTimeout(() => {
         this.$emit('finished');
-      }, 500);
-    }, 4000);
+      }, 300);
+    }, 3500);
   },
   beforeUnmount() {
     clearInterval(this.typingInterval);

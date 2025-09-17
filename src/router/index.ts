@@ -4,9 +4,6 @@ import type { RouteRecordRaw } from 'vue-router'
 // 桌面组件
 import Desktop from '@/core/desktop/Desktop.vue'
 
-// 系统应用
-import NotesApp from '@/system-apps/notes/NotesApp.vue'
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/MeowOS',
@@ -20,18 +17,10 @@ const routes: RouteRecordRaw[] = [
   }
 ]
 
-// 动态添加系统应用路由
-const systemAppRoutes: RouteRecordRaw[] = [
-  {
-    path: '/apps/notes',
-    name: 'notes',
-    component: NotesApp
-  }
-]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...routes, ...systemAppRoutes]
+  routes: [...routes]
 })
 
 // 导航守卫：记录最后访问的路由

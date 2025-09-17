@@ -83,13 +83,13 @@
       <!-- 统计信息 -->
       <div class="stats-bar">
         <span class="stat-item">
-          📁 {{ stats.directoryCount }} 个目录
+          {{ stats.directoryCount }} 个目录
         </span>
         <span class="stat-item">
-          📄 {{ stats.fileCount }} 个文档
+          {{ stats.fileCount }} 个文档
         </span>
         <span class="stat-item">
-          🕒 最后更新: {{ formatDate(new Date()) }}
+          最后更新: {{ formatDate(new Date()) }}
         </span>
       </div>
 

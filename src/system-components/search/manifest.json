@@ -12,10 +12,7 @@
   "systemComponent": {
     "position": {
       "type": "desktop",
-      "placement": "free",
-      "order": 1,
-      "x": 100,
-      "y": 100
+      "anchor": "bottom-right"
     },
     "display": {
       "always": true,

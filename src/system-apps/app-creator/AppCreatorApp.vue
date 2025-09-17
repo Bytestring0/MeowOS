@@ -8,12 +8,9 @@
     <div class="content">
       <!-- 创建按钮 -->
       <div v-if="!isCreating && customApps.length === 0" class="empty-state">
-        <div class="empty-icon">➕</div>
+        <div class="empty-icon" @click="openCreateForm">➕</div>
         <h3>还没有自定义应用</h3>
-        <p>点击下方按钮创建您的第一个自定义应用</p>
-        <button @click="openCreateForm" class="create-btn primary">
-          ➕ 创建新应用
-        </button>
+        <p>点击上方按钮创建您的第一个自定义应用</p>
       </div>
 
       <!-- 应用列表 -->
@@ -21,7 +18,7 @@
         <div class="list-header">
           <h3>已创建的应用 ({{ customApps.length }})</h3>
           <button @click="openCreateForm" class="create-btn">
-            ➕ 创建新应用
+            创建新应用
           </button>
         </div>
         
@@ -148,7 +145,13 @@
   margin-bottom: 20px;
   opacity: 0.5;
 }
-
+.empty-icon:hover{
+    transition: all 0.2s ease;
+  background: var(--bg-color-light);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  transform: scale(1.1);
+}
 .empty-state h3 {
   color: var(--text-color);
   margin-bottom: 8px;

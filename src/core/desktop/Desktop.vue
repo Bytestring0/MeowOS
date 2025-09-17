@@ -59,7 +59,7 @@ const apps = computed(() => system.listApps());
 const gridSize = ref({ columns: 10, rows: 1 });
 
 // 系统组件注册表
-const systemComponentRegistry = shallowRef<Record<string, any>>({});
+const systemComponentRegistry = ref<Record<string, any>>({});
 
 // 获取桌面系统组件
 const desktopSystemComponents = computed(() => 
