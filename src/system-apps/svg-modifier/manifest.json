@@ -3,7 +3,7 @@
   "name": "svg文件编辑器",
   "description": "创建或编辑svg文件",
   "version": "1.0.0",
-  "icon": "icons/default-app.svg",
+  "icon": "icons/Svg.svg",
   "type": "app",
   "entry": "SvgModifierApp"
 }
