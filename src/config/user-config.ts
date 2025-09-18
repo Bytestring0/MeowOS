@@ -7,11 +7,6 @@ import type { UserConfig, AnimationPreset } from '../core/types/system';
 export const userConfig: UserConfig = {
   // 默认主题设置
   defaultTheme: 'light',
-
-  // 系统功能开关
-  enableWindowShadow: true,
-  enableGlassEffect: false,
-
   // 自定义主题 - 用户可以在这里添加自己的主题
   themes: [
     // 自定义蓝色主题
@@ -182,36 +177,6 @@ export const userConfig: UserConfig = {
       name: '我的壁纸',
     },
   ],
-
-  // 任务栏配置
-  taskbar: {
-    height: 48,
-    position: 'bottom',
-    autoHide: true,
-    showClock: true,
-    showSystemTray: true,
-  },
-
-  // 桌面配置
-  desktop: {
-    showDesktopIcons: true,
-    iconSize: 'medium',
-    gridSnap: true,
-    layout: 'grid',
-  },
-
-  // 窗口配置
-  window: {
-    animationEnabled: true,
-    snapToEdge: true,
-    transparencyEffects: true,
-  },
-
-  // 鼠标配置
-  mouse: {
-    enableUserSelect: true,
-    enableDragSelect: true,
-  },
 };
 export const userAnimationConfig: Partial<AnimationPreset>[] = [
   {

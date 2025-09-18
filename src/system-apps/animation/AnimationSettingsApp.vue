@@ -17,22 +17,6 @@
         </div>
       </div>
     </div>
-
-    <div v-if="selectedPreset" class="settings-section">
-      <h3>预览动画</h3>
-      <div class="preview-buttons">
-        <button @click="previewAnimation('open')" class="preview-btn">
-          窗口打开
-        </button>
-        <button @click="previewAnimation('close')" class="preview-btn">
-          窗口关闭
-        </button>
-        <button @click="previewAnimation('maximize')" class="preview-btn">
-          窗口最大化
-        </button>
-      </div>
-    </div>
-
   </div>
 </template>
 

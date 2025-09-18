@@ -16,7 +16,14 @@
   /* user-select: var(--user-select, none);
   -webkit-user-select: var(--user-select, none); */
 }
-
+@font-face {
+  font-family: 'FIRACODE-RETINA';
+  src: url('/font/FIRACODE-RETINA.TTF');
+}
+@font-face {
+  font-family: 'SmileySans-Oblique';
+  src: url('/font/SmileySans-Oblique.ttf');
+}
 html, body {
   width: 100%;
   height: 100%;

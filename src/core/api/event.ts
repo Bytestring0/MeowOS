@@ -24,7 +24,6 @@ class EventBus {
       this.events[event].splice(index, 1);
     }
 
-    // 如果没有监听器了，删除这个事件
     if (this.events[event].length === 0) {
       delete this.events[event];
     }
@@ -43,7 +42,6 @@ class EventBus {
     });
   }
 
-  // 只监听一次
   once(event: string, callback: EventCallback): void {
     const onceCallback = (payload?: any) => {
       callback(payload);
@@ -52,17 +50,14 @@ class EventBus {
     this.on(event, onceCallback);
   }
 
-  // 清除某个事件的所有监听器
   clear(event: string): void {
     delete this.events[event];
   }
 
-  // 清除所有事件监听器
   clearAll(): void {
     this.events = {};
   }
 
-  // 获取某个事件的监听器数量
   listenerCount(event: string): number {
     return this.events[event]?.length || 0;
   }
@@ -83,15 +78,13 @@ export enum SystemEvents {
   WindowFocused = 'windowFocused',
   WindowMinimized = 'windowMinimized',
   WindowMaximized = 'windowMaximized',
-  WindowRestored = 'windowRestored', // 新增窗口恢复事件
-  // 桌面图标相关事件
+  WindowRestored = 'windowRestored', 
   IconDragStart = 'iconDragStart',
   IconDragEnd = 'iconDragEnd',
   IconPositionChanged = 'iconPositionChanged',
   IconOrderChanged = 'iconOrderChanged',
   DesktopLayoutSaved = 'desktopLayoutSaved',
   DesktopLayoutLoaded = 'desktopLayoutLoaded',
-  // 系统组件相关事件
   SystemComponentStarted = 'systemComponentStarted',
   SystemComponentStopped = 'systemComponentStopped',
   SystemComponentMoved = 'systemComponentMoved',

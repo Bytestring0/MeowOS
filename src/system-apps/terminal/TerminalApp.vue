@@ -1,8 +1,6 @@
 <template>
   <div class="terminal-app" ref="terminalRef" @click="focusInput">
-    <!-- 终端内容区域 -->
     <div class="terminal-body" ref="terminalBody">
-      <!-- 输出历史 -->
       <div class="terminal-history">
         <div
           v-for="(line, index) in history"
@@ -12,7 +10,6 @@
         ></div>
       </div>
 
-      <!-- 当前输入行 -->
       <div class="terminal-current-line" v-if="!isTyping">
         <span class="prompt">{{ config.prompt }}</span>
         <span class="input-before-cursor">{{ currentInput.slice(0, cursorPosition) }}</span>
@@ -20,11 +17,9 @@
         <span class="input-after-cursor">{{ currentInput.slice(cursorPosition) }}</span>
       </div>
 
-      <!-- 打字机输出区域 -->
       <div class="typewriter-output" ref="typewriterRef" v-show="isTyping"></div>
     </div>
 
-    <!-- 隐藏的实际输入框 -->
     <input
       ref="hiddenInput"
       v-model="currentInput"
@@ -310,34 +305,27 @@ function navigateHistory(direction: number) {
   }
 }
 
-// 命令自动补全
 function autocompleteCommand() {
   const input = currentInput.value.toLowerCase().trim();
   if (!input) return;
   
-  // 查找匹配的命令
   const matches = config.commands
     .filter(cmd => cmd.name.startsWith(input) && !cmd.hidden)
     .map(cmd => cmd.name);
   
-  // 查找匹配的别名
   const aliasMatches = config.commands
     .filter(cmd => cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input)) && !cmd.hidden)
     .map(cmd => cmd.name);
   
-  // 合并并去重
   const allMatches = [...new Set([...matches, ...aliasMatches])];
   
   if (allMatches.length === 1) {
-    // 只有一个匹配，直接补全
     currentInput.value = allMatches[0] + ' ';
     cursorPosition.value = currentInput.value.length;
     updateHiddenInputCursor();
   } else if (allMatches.length > 1) {
-    // 多个匹配，显示选项
     addToHistory(`可能的命令: ${allMatches.join(', ')}`, 'output');
     
-    // 找到共同前缀
     const commonPrefix = findCommonPrefix(allMatches);
     if (commonPrefix.length > input.length) {
       currentInput.value = commonPrefix;
@@ -347,7 +335,7 @@ function autocompleteCommand() {
   }
 }
 
-// 查找共同前缀
+
 function findCommonPrefix(words: string[]): string {
   if (words.length === 0) return '';
   if (words.length === 1) return words[0];
@@ -367,11 +355,11 @@ function findCommonPrefix(words: string[]): string {
   return prefix;
 }
 
-// 添加到历史记录
+
 function addToHistory(content: string, type: 'output' | 'error' | 'success' | 'warning' | 'command' = 'output') {
   history.push({ content, type });
   
-  // 限制历史记录长度
+
   if (history.length > 1000) {
     history.splice(0, 100);
   }
@@ -381,14 +369,12 @@ function addToHistory(content: string, type: 'output' | 'error' | 'success' | 'w
   });
 }
 
-// 滚动到底部
 function scrollToBottom() {
   if (terminalBody.value) {
     terminalBody.value.scrollTop = terminalBody.value.scrollHeight;
   }
 }
 
-// 打字机效果
 async function typeText(text: string): Promise<void> {
   if (!typewriterRef.value) return;
   
@@ -475,7 +461,7 @@ function getTerminalInterface() {
   height: 100%;
   background-color: #1a1a1a;
   color: #ffffff;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: 'FIRACODE-RETINA';
   font-size: 14px;
   line-height: 1.4;
   overflow: hidden;

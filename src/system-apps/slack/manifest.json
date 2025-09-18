@@ -1,0 +1,9 @@
+ {
+  "id": "system-Slackman",
+  "name": "墨鱼",
+  "description": "txt文本隐藏器",
+  "version": "1.0.0",
+  "icon": "icons/moyu.jpg",
+  "type": "app",
+  "entry": "slackingmanApp"
+}

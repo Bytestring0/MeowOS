@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: 'MeowOSLoader',
+  name: 'Loading',
   data() {
     return {
       isFinishing: false,
@@ -39,18 +39,14 @@ export default {
         } else {
           clearInterval(this.typingInterval);
         }
-      }, 100); // 每个字符的打字速度
+      }, 100); // 打字速度
     },
   },
   mounted() {
-    // 1.5秒后开始打字效果
     setTimeout(this.startTyping, 1000);
 
-    // 总动画时长约为 5.5 秒
-    // 4500ms (进度条加载) + 500ms (延迟) + 500ms (淡出)
     setTimeout(() => {
       this.isFinishing = true;
-      // 在淡出动画结束后触发事件
       setTimeout(() => {
         this.$emit('finished');
       }, 300);
@@ -158,7 +154,7 @@ export default {
   height: 100%;
   background-color: #ffffff;
   border-radius: 2px;
-  animation: load-progress 3s ease-in-out forwards 1.5s; /* 延迟 1.5s 开始 */
+  animation: load-progress 3s ease-in-out forwards 1s; /* 延迟 1.5s 开始 */
 }
 
 /* 动画定义 */

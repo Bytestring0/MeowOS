@@ -52,7 +52,6 @@
 
       <!-- 文档内容 -->
       <div class="content-wrapper">
-        <!-- 加载状态 -->
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
           <p>加载文档中...</p>

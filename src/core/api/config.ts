@@ -172,8 +172,6 @@ export const defaultSystemConfig: SystemConfig = {
   defaultTheme: 'light',
   themes: defaultThemes,
   wallpapers: defaultWallpapers,
-  enableWindowShadow: true,
-  enableGlassEffect: true,
   taskbar: {
     height: 48,
     position: 'bottom'
@@ -191,31 +189,6 @@ export function mergeUserConfig(userConfig: UserConfig): SystemConfig {
   
   if (userConfig.wallpapers) {
     config.wallpapers = [...defaultWallpapers, ...userConfig.wallpapers as WallpaperSource[]];
-  }
-  if (userConfig.taskbar) {
-    config.taskbar = { ...config.taskbar, ...userConfig.taskbar };
-  }
-  
-  if (userConfig.enableWindowShadow !== undefined) {
-    config.enableWindowShadow = userConfig.enableWindowShadow;
-  }
-  
-  if (userConfig.enableGlassEffect !== undefined) {
-    config.enableGlassEffect = userConfig.enableGlassEffect;
-  }
-  
-  // 应用鼠标设置
-  if (userConfig.mouse) {
-    const root = document.documentElement;
-    if (userConfig.mouse.enableUserSelect !== undefined) {
-      root.style.setProperty('--user-select', userConfig.mouse.enableUserSelect ? 'text' : 'none');
-    }
-    if (userConfig.mouse.enableContextMenu === false) {
-      document.addEventListener('contextmenu', e => e.preventDefault());
-    }
-    if (userConfig.mouse.enableDragSelect === false) {
-      document.addEventListener('dragstart', e => e.preventDefault());
-    }
   }
   
   return config;

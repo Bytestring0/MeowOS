@@ -39,23 +39,20 @@ class SystemService {
   private async init() {
     if (this.initialized) return;
     
-    // 加载用户配置
     this.userConfig = userConfig;
     this.state.config = mergeUserConfig(userConfig);
     
     await this.loadSettings();
     await this.loadApps();
-    await this.loadSystemComponents(); // 加载系统组件
+    await this.loadSystemComponents(); 
     
-    // 应用用户配置的默认主题
-    if (userConfig.defaultTheme) {
-      this.state.theme = userConfig.defaultTheme;
-    }
+    // if (userConfig.defaultTheme) {
+    //   this.state.theme = userConfig.defaultTheme;
+    // }
     
     this.initialized = true;
   }
 
-  // 用户配置接口
   setUserConfig(config: UserConfig) {
     this.userConfig = config;
     this.state.config = mergeUserConfig(config);
@@ -68,13 +65,10 @@ class SystemService {
 
   private async loadApps() {
     this.state.apps = this.getDefaultSystemApps();
-    // 加载自定义应用
     await this.loadCustomApps();
-    // 初始化图标位置
     this.initializeIconPositions();
   }
 
-  // 初始化图标位置（为没有位置信息的应用分配位置）
   private initializeIconPositions() {
     const visibleApps = this.state.apps.filter(a => 
       (a.showOnDesktop !== false) && !a.isSystemComponent
@@ -92,10 +86,7 @@ class SystemService {
   }
 
   private getDefaultSystemApps(): AppManifest[] {
-    // 扫描 system-apps 下所有 manifest.json
     const modules = import.meta.glob('../../system-apps/*/manifest.json', { eager: true });
-    
-    // 扫描 system-components 下所有 manifest.json
     const componentModules = import.meta.glob('../../system-components/*/manifest.json', { eager: true });
 
     const apps: AppManifest[] = [];
@@ -107,13 +98,12 @@ class SystemService {
       apps.push(manifest);
     }
     
-    // 处理系统组件
     for (const path in componentModules) {
       const mod: any = componentModules[path];
       const manifest: AppManifest = mod.default || mod;
       manifest.type = 'system-component';
       manifest.isSystemComponent = true;
-      manifest.showOnDesktop = false; // 系统组件不显示在桌面
+      manifest.showOnDesktop = false;
       apps.push(manifest);
     }
 
@@ -128,15 +118,12 @@ class SystemService {
       this.state.wallpaper = savedSettings.wallpaper || '/wallpapers/default.svg';
       this.state.settings = { ...this.state.settings, ...savedSettings.settings };
     } else {
-      // 如果没有保存的设置，使用默认值
       this.state.theme = 'light';
       this.state.wallpaper = '/wallpapers/default.svg';
     }
 
-    // 加载图标位置信息
     await this.loadIconPositions();
 
-    // 应用已保存的主题
     this.applyTheme(this.state.theme);
   }
 
@@ -149,12 +136,10 @@ class SystemService {
     await storage.setSystemSetting('systemSettings', settings);
   }
 
-  // 加载图标位置信息
   private async loadIconPositions() {
     const savedPositions = await storage.getSystemSetting('iconPositions');
     if (savedPositions) {
       console.log('Loaded icon positions:', savedPositions);
-      // 将保存的位置信息应用到应用列表中
       this.state.apps.forEach(app => {
         const savedPos = savedPositions[app.id];
         if (savedPos) {
@@ -165,7 +150,6 @@ class SystemService {
     }
   }
 
-  // 保存图标位置信息
   public async saveIconPositions() {
     const positions: Record<string, any> = {};
     const metadata = {
@@ -178,14 +162,13 @@ class SystemService {
       if (app.desktopPosition) {
         positions[app.id] = {
           ...app.desktopPosition,
-          appName: app.name, // 保存应用名称用于调试
+          appName: app.name,
           appVersion: app.version
         };
         metadata.totalApps++;
       }
     });
 
-    // 保存位置数据和元数据
     await storage.setSystemSetting('iconPositions', positions);
     await storage.setSystemSetting('iconPositionsMetadata', metadata);
     
@@ -195,21 +178,19 @@ class SystemService {
     eventBus.emit(SystemEvents.DesktopLayoutSaved, { positions, metadata });
   }
 
-  // 更新单个应用的桌面位置
   public updateAppPosition(appId: string, position: { x: number; y: number; gridIndex?: number }) {
     const app = this.state.apps.find(a => a.id === appId);
     if (app) {
       const oldPosition = app.desktopPosition;
       app.desktopPosition = position;
       
-      // 发布位置变更事件
       eventBus.emit(SystemEvents.IconPositionChanged, {
         appId,
         oldPosition,
         newPosition: position
       });
       
-      this.saveIconPositions(); // 自动保存
+      this.saveIconPositions();
     }
   }
 
@@ -223,7 +204,6 @@ class SystemService {
       app1.desktopPosition = app2.desktopPosition;
       app2.desktopPosition = temp;
       
-      // 发布交换事件
       eventBus.emit(SystemEvents.IconOrderChanged, {
         app1: appId1,
         app2: appId2,
@@ -231,11 +211,10 @@ class SystemService {
         position2: app2.desktopPosition
       });
       
-      this.saveIconPositions(); // 自动保存
+      this.saveIconPositions();
     }
   }
 
-  // 批量更新图标位置（用于拖拽排序）
   public updateMultipleAppPositions(updates: Array<{ appId: string; position: { x: number; y: number; gridIndex?: number } }>) {
     const changedApps: Array<{ appId: string; oldPosition: any; newPosition: any }> = [];
     
@@ -249,13 +228,12 @@ class SystemService {
     });
 
     if (changedApps.length > 0) {
-      // 发布批量更新事件
       eventBus.emit(SystemEvents.IconOrderChanged, {
         type: 'batch',
         changes: changedApps
       });
       
-      this.saveIconPositions(); // 自动保存
+      this.saveIconPositions();
     }
   }
 
@@ -275,7 +253,7 @@ class SystemService {
       isMinimized: false,
       isMaximized: false,
       zIndex: this.nextZIndex++,
-      isPinned: false, // 初始化置顶状态为false
+      isPinned: false, 
     };
   }
 
@@ -315,7 +293,6 @@ class SystemService {
       const existing = this.state.windows.find(w => w.id.startsWith(appId));
       if (existing) {
         existing.isMinimized = false;
-        // 不再设置 isHidden
         existing.zIndex = this.nextZIndex++;
         return existing;
       }
@@ -347,7 +324,6 @@ class SystemService {
         w.zIndex = this.nextZIndex++;
       }
       w.isMinimized = false;
-      // 不再设置 isHidden，让窗口保持在DOM中
       
       // 如果窗口之前是最小化的，触发恢复动画
       if (wasMinimized) {
@@ -361,7 +337,6 @@ class SystemService {
     const w = this.state.windows.find(w => w.id === windowId);
     if (w) {
       w.isMinimized = true;
-      // 不再设置 isHidden，让窗口保持在DOM中但通过CSS隐藏
       eventBus.emit(SystemEvents.WindowMinimized, w);
     }
   }
@@ -401,7 +376,6 @@ class SystemService {
         }
       });
 
-      this.state.themeEffects = theme.effects;
 
       eventBus.emit(SystemEvents.ThemeChanged, themeId);
     }
@@ -483,7 +457,6 @@ class SystemService {
   public async startSystemComponent(app: AppManifest): Promise<SystemComponentState | null> {
     if (!app.systemComponent) return null;
     
-    // 检查是否已经启动
     const existing = this.systemComponents.find(c => c.id === app.id);
     if (existing) return existing;
 
@@ -569,22 +542,16 @@ class SystemService {
     }
   }
 
-  // 自定义应用管理
   async addCustomApp(manifest: AppManifest) {
-    // 检查是否已存在
     const existingIndex = this.state.apps.findIndex(app => app.id === manifest.id);
     if (existingIndex !== -1) {
-      // 更新现有应用
       this.state.apps[existingIndex] = manifest;
     } else {
-      // 添加新应用
       this.state.apps.push(manifest);
     }
     
-    // 保存到持久存储
     await this.saveCustomApps();
     
-    // 发布事件
     eventBus.emit(SystemEvents.AppAdded, manifest);
   }
 
@@ -593,13 +560,10 @@ class SystemService {
     if (index !== -1) {
       const removedApp = this.state.apps.splice(index, 1)[0];
       
-      // 关闭相关窗口
       this.state.windows = this.state.windows.filter(w => !w.id.startsWith(appId));
       
-      // 保存到持久存储
       await this.saveCustomApps();
       
-      // 发布事件
       eventBus.emit(SystemEvents.AppRemoved, removedApp);
       
       return true;
@@ -620,7 +584,6 @@ class SystemService {
     try {
       const customApps = await storage.get('system-custom-apps');
       if (customApps && Array.isArray(customApps)) {
-        // 将自定义应用合并到应用列表中
         const existingIds = new Set(this.state.apps.map(app => app.id));
         customApps.forEach(app => {
           if (!existingIds.has(app.id)) {

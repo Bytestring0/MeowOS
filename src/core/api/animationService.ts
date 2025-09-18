@@ -4,7 +4,6 @@ import type { AnimationPreset, AnimationConfig } from '../types/system';
 import { userAnimationConfig } from '@/config/user-config';
 class AnimationService {
   private currentPreset = ref<string>('default');
-  // 预设动画配置
   private presets: AnimationPreset[] = [
     {
       id: 'none',
@@ -45,7 +44,6 @@ class AnimationService {
         enabled: true,
         description: '翻页动画',
         customAnimation: (oldEl: HTMLElement, newEl: HTMLElement) => {
-          // 自定义翻转动画
           const duration = 1000;
 
           if (oldEl) {
@@ -189,7 +187,6 @@ class AnimationService {
     const config = this.getCurrentConfig();
     const root = document.documentElement;
 
-    // 安全地获取动画配置
     const getAnimConfig = (key: string): AnimationConfig => {
       const animConfig = config[key] as AnimationConfig;
       return animConfig || { duration: 0, easing: 'linear', enabled: false };
@@ -218,7 +215,6 @@ class AnimationService {
     root.style.setProperty('--taskbar-transition-duration', `${taskbarTransition.duration}ms`);
     root.style.setProperty('--taskbar-transition-easing', taskbarTransition.easing);
 
-    // 启用/禁用标志
     root.style.setProperty('--animations-enabled', windowOpen.enabled ? '1' : '0');
   }
 
@@ -232,7 +228,6 @@ class AnimationService {
     return this.currentPreset.value;
   }
 
-  // 动画元素的辅助方法
   animateElement(
     element: HTMLElement,
     type: string,
@@ -243,7 +238,6 @@ class AnimationService {
     const config = this.getCurrentConfig()[type] as AnimationConfig;
 
     if (!config || !config.enabled) {
-      // 如果动画被禁用，立即跳到最后一帧
       const keyframes = defaultKeyframes || [];
 
       const animationOptions: KeyframeAnimationOptions = {
@@ -258,7 +252,6 @@ class AnimationService {
     if (config.customAnimation) {
       return config.customAnimation(element, ...args);
     }
-    // 使用配置中的 keyframes 或默认的 keyframes
     const keyframes = config.keyframes || defaultKeyframes || [];
 
     const animationOptions: KeyframeAnimationOptions = {
@@ -272,7 +265,7 @@ class AnimationService {
     return element.animate(keyframes, animationOptions);
   }
 
-  // 窗口打开动画 - 现在支持自定义样式
+  // 窗口打开动画
   animateWindowOpen(element: HTMLElement): Animation {
     console.log('Animating window open:', element);
     return this.animateElement(element, 'windowOpen', [
@@ -324,7 +317,6 @@ class AnimationService {
       },
     ]);
 
-    // 动画完成后，重置元素的变换状态，让CSS接管显示控制
     animation.addEventListener('finish', () => {
       element.style.transform = '';
       element.style.opacity = '';
@@ -333,9 +325,8 @@ class AnimationService {
     return animation;
   }
 
-  // 窗口恢复动画（从最小化状态恢复）
+  // 窗口恢复动画
   animateWindowRestore(element: HTMLElement): Animation {
-    // 先重置CSS控制，让元素可见
     element.style.visibility = 'visible';
     element.style.opacity = '1';
     element.style.pointerEvents = 'auto';
@@ -385,7 +376,6 @@ class AnimationService {
       return config.duration;
     }
 
-    // 默认旋转动画
     const options: KeyframeAnimationOptions = {
       duration: config.duration * 10 || 1000,
       easing: config.easing || 'ease-in-out',
