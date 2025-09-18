@@ -96,7 +96,6 @@
         <!-- 画布 -->
         <svg ref="svgCanvas" class="canvas" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
             :width="canvasWidth" :height="canvasHeight">
-            <!-- 全局容器，所有元素都放这里 -->
             <g ref="globalGroup" :transform="`translate(${globalOffset.x},${globalOffset.y})`"></g>
         </svg>
 

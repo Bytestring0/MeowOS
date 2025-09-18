@@ -56,9 +56,6 @@ function openSite(site) {
   window.open(site.url, "_blank");
 }
 
-function closeSite() {
-  selectedSite.value = null;
-}
 </script>
 
 <style scoped>
