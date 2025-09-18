@@ -1,4 +1,4 @@
-# MeowOS API 完整指南
+# MeowOS API 指南
 
 MeowOS 是一个基于 Vue 3 的桌面操作系统模拟器，提供了完整的系统API、存储API、文件系统API、右键菜单API、动画服务和事件系统。本文档详细介绍所有可用的API接口和使用方法。
 
