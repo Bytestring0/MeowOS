@@ -1,9 +1,9 @@
  {
   "id": "system-Slackman",
-  "name": "墨鱼",
+  "name": "Word(?)",
   "description": "txt文本隐藏器",
   "version": "1.0.0",
-  "icon": "icons/moyu.jpg",
+  "icon": "icons/Word.svg",
   "type": "app",
   "entry": "slackingmanApp"
 }
