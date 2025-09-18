@@ -70,8 +70,10 @@
                         d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1l-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
                 </svg>
             </button>
-            <button class="btn" title="上传文件"><input type="file" accept=".svg" @change="importSVG" style="display: none;" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <button class="btn" title="上传文件"><input type="file" accept=".svg" @change="importSVG"
+                    style="width: 100%;height: 100%;opacity: 0;" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    style="position: absolute;top: 4px;left: 12px;">
                     <path fill="#000000"
                         d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16zm-5 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z" />
                 </svg>
@@ -128,6 +130,36 @@ const history = reactive({
     index: -1
 });
 
+// ===== 撤销 / 重做 =====
+function saveHistory() {
+    if (!svgCanvas.value) return;
+  const current = svgCanvas.value.innerHTML;
+
+  // 截断 redo
+  if (history.index < history.stack.length - 1) {
+    history.stack.splice(history.index + 1);
+  }
+
+  history.stack.push(current);
+  history.index++;
+}
+
+function undo() {
+    if (history.index > 0) {
+        history.index--;
+        svgCanvas.value.innerHTML = history.stack[history.index];
+        rebindAllLayers();
+    }
+}
+
+function redo() {
+    if (history.index < history.stack.length - 1) {
+        history.index++;
+        svgCanvas.value.innerHTML = history.stack[history.index];
+        rebindAllLayers();
+    }
+}
+
 const svgLayers = reactive([]);
 
 function setTool(t) {
@@ -137,8 +169,8 @@ function setTool(t) {
 // ===== 文件操作 =====
 function newFile() {
     svgCanvas.value.innerHTML = "";
-    history.stack = [];
-    history.index = -1;
+    history.stack = [svgCanvas.value.innerHTML];
+    history.index = 0;
     svgLayers.splice(0);
 }
 
@@ -150,16 +182,35 @@ function clearCanvas() {
 }
 
 function exportSVG() {
-    if (!svgCanvas.value) return;
-    const svgEl = svgCanvas.value;
+    const svg = svgCanvas.value;
+    const serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svg);
 
-    // 保证必要属性
-    svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    svgEl.setAttribute("version", "1.1");
-    svgEl.setAttribute("viewBox", `0 0 ${canvasWidth.value} ${canvasHeight.value}`);
+    // 确保根节点包含所有常见命名空间
+    const nsAttrs = [
+        'xmlns="http://www.w3.org/2000/svg"',
+        'xmlns:xlink="http://www.w3.org/1999/xlink"',
+        'xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"',
+        'xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"',
+        'xmlns:dc="http://purl.org/dc/elements/1.1/"',
+        'xmlns:cc="http://creativecommons.org/ns#"',
+        'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
+    ];
 
-    const svgData = svgEl.outerHTML;
-    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    if (!source.includes("xmlns=")) {
+        // 如果缺失 xmlns，就直接把全部命名空间补充进去
+        source = source.replace("<svg", "<svg " + nsAttrs.join(" "));
+    } else {
+        // 如果已有 xmlns，但缺少其他命名空间，就逐个补充
+        nsAttrs.forEach(ns => {
+            const key = ns.split("=")[0]; // 比如 xmlns:inkscape
+            if (!source.includes(key)) {
+                source = source.replace("<svg", "<svg " + ns);
+            }
+        });
+    }
+
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -168,7 +219,9 @@ function exportSVG() {
     URL.revokeObjectURL(url);
 }
 
+
 function importSVG(e) {
+    console.log(1)
     const files = Array.from(e.target.files || []);
     if (!svgCanvas.value) return;
     files.forEach(file => {
@@ -209,34 +262,6 @@ function importSVG(e) {
 
     // reset input so same file(s) can be reselected later
     e.target.value = "";
-}
-
-// ===== 撤销 / 重做 =====
-function saveHistory() {
-    if (!svgCanvas.value) return;
-
-    history.stack = history.stack.slice(0, history.index + 1);
-    history.stack.push(svgCanvas.value.innerHTML);
-    history.index++;
-
-    if (history.stack.length > 60) history.stack.shift();
-    if (history.index > history.stack.length - 1) history.index = history.stack.length - 1;
-}
-
-function undo() {
-    if (history.index > 0) {
-        history.index--;
-        svgCanvas.value.innerHTML = history.stack[history.index];
-        rebindAllLayers();
-    }
-}
-
-function redo() {
-    if (history.index < history.stack.length - 1) {
-        history.index++;
-        svgCanvas.value.innerHTML = history.stack[history.index];
-        rebindAllLayers();
-    }
 }
 
 function rebindAllLayers() {
@@ -552,5 +577,7 @@ function bindDragRotate(g) {
     width: 100%;
     font-size: 12px;
     padding: 4px 0;
+    position: relative;
+    height: 32px;
 }
 </style>

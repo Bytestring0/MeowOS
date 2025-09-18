@@ -454,6 +454,12 @@ class SystemService {
         type: 'image',
       },
       { id: 'neon_grid', name: '霓虹网格', value: 'wallpapers/neon_grid.svg', type: 'image' },
+      {
+        id: 'xiaohui',
+        name: '东南大学',
+        value: 'wallpapers/dndx.jpg',
+        type: 'image',
+      },
     ];
   }
 
