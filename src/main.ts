@@ -7,7 +7,6 @@ import router from './router'
 import '@/assets/styles/global.css'
 
 import { system } from '@/core/api/system'
-import { easterEggs } from '@/core/api/easterEggs'
 import { animationService } from '@/core/api/animationService'
 
 

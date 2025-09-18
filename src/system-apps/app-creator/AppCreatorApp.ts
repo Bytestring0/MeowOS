@@ -171,7 +171,6 @@ export default defineComponent({
         category: 'custom',
         type: 'app',
         singleInstance: false,
-        permissions: ['network'],
         settings: {
           url: appData.url,
           isCustomApp: true,

@@ -5,7 +5,7 @@ import type { WindowState } from '../types/system';
 import { eventBus, SystemEvents } from '../api/event';
 import { animationService } from '../api/animationService';
 
-// 自动扫描 system-apps 目录下的所有 .vue 组件
+
 const modules = import.meta.glob('../../system-apps/*/*.vue', { eager: true })
 const appRegistry: Record<string, any> = {}
 
@@ -14,7 +14,7 @@ for (const path in modules) {
   const name = path.split('/').pop()!.replace('.vue', '') // 提取文件名作为组件名
   appRegistry[name] = mod.default
 }
-console.log(appRegistry)
+
 export default defineComponent({
   name: 'Window',
   
@@ -56,7 +56,6 @@ export default defineComponent({
       }
       
       props.window.isMinimized = true;
-      // 不再设置 isHidden，让窗口保持在DOM中
       system.minimizeWindow(props.window.id);
       eventBus.emit(SystemEvents.WindowMinimized, props.window);
     };
@@ -111,10 +110,8 @@ export default defineComponent({
       props.window.isPinned = !props.window.isPinned;
       
       if (props.window.isPinned) {
-        // 置顶：设置一个很高的zIndex
         props.window.zIndex = 9999;
       } else {
-        // 取消置顶：重新计算正常的zIndex
         system.focusWindow(props.window.id);
       }
       
@@ -201,7 +198,6 @@ export default defineComponent({
       const minWidth = 200;
       const minHeight = 150;
       
-      // 对于左边缩放，如果宽度小于最小值，需要调整位置
       if (direction.includes('w') && newWidth < minWidth) {
         const diff = minWidth - newWidth;
         newX = newX - diff;
@@ -210,7 +206,7 @@ export default defineComponent({
         newWidth = Math.max(minWidth, newWidth);
       }
       
-      // 对于顶部缩放，如果高度小于最小值，需要调整位置
+
       if (direction.includes('n') && newHeight < minHeight) {
         const diff = minHeight - newHeight;
         newY = newY - diff;
@@ -218,8 +214,6 @@ export default defineComponent({
       } else {
         newHeight = Math.max(minHeight, newHeight);
       }
-
-      // 应用新的尺寸和位置
       props.window.size.width = newWidth;
       props.window.size.height = newHeight;
       props.window.position.x = newX;
@@ -276,7 +270,7 @@ export default defineComponent({
       focus,
       onWindowEnter,
       onWindowLeave,
-      appRegistry, // 暴露给模板
+      appRegistry, 
     };
   },
 });

@@ -5,7 +5,6 @@ import Loading from '@/core/desktop/Loading.vue';
 import { system } from '@/core/api/system';
 import { computed, onMounted, ref } from 'vue';
 import { ApiFetch } from './utils';
-import fetchJsonp from 'fetch-jsonp';
 const windows = computed(() => system.getWindows().filter(w => !w.isHidden));
 const isLoading = ref<boolean>(true);
 onMounted(async () => {
@@ -22,8 +21,6 @@ onMounted(async () => {
     console.info('使用默认系统配置');
   }
 });
-// const res = await fetchJsonp("https://api.paugram.com/wallpaper/");
-// console.log(res);
 </script>
 
 <template>
@@ -36,6 +33,7 @@ onMounted(async () => {
 </template>
 
 <style>
+
 :root {
   @import '@/assets/styles/theme.css';
 }

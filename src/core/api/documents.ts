@@ -31,7 +31,6 @@ class DocumentSystemAPI {
 
   private async loadDocuments() {
     try {
-      // 使用 Vite 的 glob 功能扫描文档目录
       const markdownFiles = import.meta.glob('../../documents/**/*.md', { 
         query: '?raw',
         import: 'default',
@@ -49,8 +48,6 @@ class DocumentSystemAPI {
         const parts = relativePath.split('/').filter(p => p);
         const fileName = parts.pop() || '';
         const dirPath = '/' + parts.join('/');
-
-        // 创建目录结构
         let currentPath = '';
         for (let i = 0; i < parts.length; i++) {
           currentPath += '/' + parts[i];
@@ -84,7 +81,7 @@ class DocumentSystemAPI {
           id: relativePath,
           name: fileName.replace('.md', ''),
           type: 'file',
-          path: relativePath, // 保留完整路径包括.md后缀
+          path: relativePath, 
           modified: new Date(),
           created: new Date(),
           size: 0
@@ -139,14 +136,12 @@ class DocumentSystemAPI {
     }
 
     try {
-      // 动态导入文档内容
       const markdownFiles = import.meta.glob('../../documents/**/*.md', { 
         query: '?raw',
         import: 'default',
         eager: false 
       });
       
-      // 找到对应的文件路径 - 不需要添加.md后缀，因为path已经包含了
       const fullPath = `../../documents${path}`;
       
       const moduleLoader = markdownFiles[fullPath];
@@ -285,7 +280,6 @@ class DocumentSystemAPI {
     return results;
   }
 
-  // 检查是否已加载
   isLoaded(): boolean {
     return this.state.loaded;
   }

@@ -1,9 +1,0 @@
-{
-  "id": "meow-lang",
-  "name": "MeowLang",
-  "description": "简易的编程语言",
-  "version": "1.0.0",
-  "icon": "icons/default-app.svg",
-  "type": "app",
-  "entry": "meowLang"
-}

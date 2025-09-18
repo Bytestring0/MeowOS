@@ -52,7 +52,6 @@ const items = computed(()=> system.getTaskbarItems());
 const position = computed(()=> config.taskbar.position);
 const taskbarStyle = computed(()=> ({ height: config.taskbar.height + 'px' }));
 
-// 系统组件注册表
 const systemComponentRegistry = ref<Record<string, any>>({});
 
 // 获取任务栏系统组件，按placement分组
@@ -67,17 +66,11 @@ const rightSystemComponents = computed(() =>
   system.getSystemComponents().filter(c => 
     c.manifest.systemComponent?.position.type === 'taskbar' &&
     (c.manifest.systemComponent?.position.placement === 'right' || 
-     !c.manifest.systemComponent?.position.placement) // 默认为right
-  )
-);
-// 获取任务栏系统组件（保持向后兼容）
-const taskbarSystemComponents = computed(() => 
-  system.getSystemComponents().filter(c => 
-    c.manifest.systemComponent?.position.type === 'taskbar'
+     !c.manifest.systemComponent?.position.placement)
   )
 );
 
-// 加载系统组件模块
+
 async function loadSystemComponentModules() {
   const modules = import.meta.glob('../../system-components/*/*.vue', { eager: true });
   
@@ -85,7 +78,6 @@ async function loadSystemComponentModules() {
     const mod: any = modules[path];
     const component = mod.default || mod;
     
-    // 从路径提取组件名
     const pathParts = path.split('/');
     const fileName = pathParts[pathParts.length - 1];
     const componentName = fileName.replace('.vue', '');
@@ -215,6 +207,7 @@ onMounted(() => {
 }
 
 .logo {
+  position: relative; /* 为伪元素定位 */
   font-weight: 700;
   padding: 8px 16px;
   border-radius: var(--border-radius, 10px);
@@ -225,11 +218,33 @@ onMounted(() => {
   font-size: 14px;
   box-shadow: var(--box-shadow);
   transition: all var(--animation-duration) ease;
+  overflow: hidden; /* 防止反光超出边框 */
 }
 
-.logo:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+.logo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+}
+
+.logo:hover::before {
+  animation: shine 1s forwards;
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
 }
 
 /* 任务栏系统组件样式 */
