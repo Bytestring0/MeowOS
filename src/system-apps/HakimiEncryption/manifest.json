@@ -1,0 +1,9 @@
+{
+  "id": "system-HakimiE",
+  "name": "哈基米加密",
+  "description": "加密你的小九九",
+  "version": "1.0.0",
+  "icon": "icons/Hakimi.jpg",
+  "type": "app",
+  "entry": "HakimiEncryptionapp"
+}

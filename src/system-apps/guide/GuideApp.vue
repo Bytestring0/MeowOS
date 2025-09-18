@@ -74,7 +74,7 @@ function closeSite() {
   justify-content: flex-start;
   gap: 20px;
   margin-top: 20px;
-  padding: 10px;
+  padding: 5px;
 }
 
 /* 卡片 */
