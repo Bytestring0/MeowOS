@@ -1,8 +1,3 @@
-/**
- * 终端配置文件
- * 包含命令定义、主题设置等
- */
-
 import { TimeUtils } from '@/utils/time';
 import { ApiFetch } from '@/utils/apiFetch';
 

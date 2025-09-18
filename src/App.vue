@@ -16,6 +16,8 @@ onMounted(async () => {
     console.info('已加载用户配置', userConfig);
     system.setUserConfig(userConfig);
     system.themes;
+    // const msg = ApiFetch.getHitokoto();
+    // console.log("一眼",(await msg).data);
   } catch (error) {
     // 用户配置文件不存在，使用默认配置
     console.info('使用默认系统配置');
