@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop no-select" :style="desktopStyle" @click="clearSelection">
+  <div class="desktop no-select" :style="desktopStyle">
     <div class="desktop-grid" :style="gridStyle" @dragover.prevent @drop.prevent>
       <div 
         v-for="(app, index) in sortedVisibleApps" 
@@ -84,7 +84,6 @@ const componentDragState = reactive({
   startMousePosition: { x: 0, y: 0 }
 });
 
-// 按位置排序的可见应用
 const sortedVisibleApps = computed(() => {
   const visibleApps = apps.value.filter(a =>
     (a.showOnDesktop !== false) &&
@@ -123,9 +122,9 @@ function openApp(id: string) {
   system.openApp(id);
 }
 
-// 拖拽相关方法
+
 function startDrag(event: MouseEvent, app: AppManifest, index: number) {
-  // 这里可以添加鼠标拖拽的逻辑，但我们主要使用HTML5拖拽API
+  console.log('当前应用:', app.name);
 }
 
 function handleDragStart(event: DragEvent, app: AppManifest, index: number) {
@@ -145,7 +144,6 @@ function handleDragStart(event: DragEvent, app: AppManifest, index: number) {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', app.id);
     
-    // 创建自定义拖拽图像
     const dragImage = document.createElement('div');
     dragImage.className = 'drag-image';
     dragImage.innerHTML = `
@@ -165,7 +163,6 @@ function handleDragStart(event: DragEvent, app: AppManifest, index: number) {
     
     event.dataTransfer.setDragImage(dragImage, 50, 50);
     
-    // 清理拖拽图像
     setTimeout(() => {
       document.body.removeChild(dragImage);
     }, 0);
@@ -179,7 +176,6 @@ function handleDragOver(event: DragEvent, index: number) {
 }
 
 function handleDragLeave(event: DragEvent, index: number) {
-  // 只有当真正离开元素时才清除dragOverIndex
   if (dragState.dragOverIndex === index) {
     setTimeout(() => {
       if (dragState.dragOverIndex === index) {
@@ -202,14 +198,12 @@ function handleDrop(event: DragEvent, dropIndex: number) {
     return;
   }
 
-  // 重新排列应用顺序
   reorderApps(draggedIndex, dropIndex);
 }
 
 function handleDragEnd() {
   const draggedApp = sortedVisibleApps.value.find(app => app.id === dragState.draggedAppId);
   
-  // 发布拖拽结束事件
   eventBus.emit(SystemEvents.IconDragEnd, {
     appId: dragState.draggedAppId,
     appName: draggedApp?.name,
@@ -225,7 +219,7 @@ function handleDragEnd() {
 
 // 重新排列应用
 function reorderApps(fromIndex: number, toIndex: number) {
-  const apps = [...sortedVisibleApps.value]; // 创建副本避免直接修改响应式数据
+  const apps = [...sortedVisibleApps.value]; 
   const updates: Array<{ appId: string; position: { x: number; y: number; gridIndex?: number } }> = [];
   
   // 重新计算所有应用的gridIndex
@@ -233,17 +227,16 @@ function reorderApps(fromIndex: number, toIndex: number) {
     let newIndex: number;
     
     if (index === fromIndex) {
-      // 被拖拽的应用移动到目标位置
       newIndex = toIndex;
     } else if (fromIndex < toIndex) {
-      // 向后拖拽：从fromIndex到toIndex之间的应用向前移动
+      // 向后拖拽
       if (index > fromIndex && index <= toIndex) {
         newIndex = index - 1;
       } else {
         newIndex = index;
       }
     } else {
-      // 向前拖拽：从toIndex到fromIndex之间的应用向后移动
+      // 向前拖拽
       if (index >= toIndex && index < fromIndex) {
         newIndex = index + 1;
       } else {
@@ -269,12 +262,10 @@ function reorderApps(fromIndex: number, toIndex: number) {
 }
 
 onMounted(() => {
-  // 加载系统组件模块
   loadSystemComponentModules();
   
   // 壁纸变更事件
   eventBus.on(SystemEvents.WallpaperChanged, (oldVal: string, newVal: string) => {
-    // 设置旧壁纸到动画容器
     if (oldVal.startsWith('linear-gradient') || oldVal.startsWith('#')) {
       desktopStyle2.value = {
         background: oldVal,
@@ -289,9 +280,8 @@ onMounted(() => {
       };
     }
 
-    // 获取元素引用
-    const oldEl = document.querySelector('.wallpaper-animation') as HTMLElement  // 显示旧壁纸
-    const newEl = document.querySelector('.desktop') as HTMLElement              // 显示新壁纸
+    const oldEl = document.querySelector('.wallpaper-animation') as HTMLElement  
+    const newEl = document.querySelector('.desktop') as HTMLElement              
     
     if (oldEl && newEl) {
       const duration = animationService.animateWallpaperChange(oldEl, newEl);
@@ -324,13 +314,11 @@ onMounted(() => {
     console.log('桌面布局已加载:', data);
   });
 
-  // 加载系统组件模块
   loadSystemComponentModules();
 })
 
 // 组件卸载时清理事件监听器
 onUnmounted(() => {
-  // 清理所有桌面相关的事件监听器
   eventBus.clear(SystemEvents.IconDragStart);
   eventBus.clear(SystemEvents.IconDragEnd);
   eventBus.clear(SystemEvents.IconPositionChanged);
@@ -338,19 +326,12 @@ onUnmounted(() => {
   eventBus.clear(SystemEvents.DesktopLayoutSaved);
   eventBus.clear(SystemEvents.DesktopLayoutLoaded);
   
-  // 清理系统组件拖拽事件监听器
   document.removeEventListener('mousemove', handleComponentDragMove);
   document.removeEventListener('mouseup', handleComponentDragEnd);
 })
 
-// 桌面右键菜单
-// 清除选择
-function clearSelection() {
-  // 取消所有选中状态，这里可以扩展
-  console.log('清除选择');
-}
 
-// 系统组件拖拽功能
+
 function startComponentDrag(component: any, event: MouseEvent) {
   if (!component.manifest.systemComponent?.display?.draggable) return;
   
@@ -376,7 +357,6 @@ function handleComponentDragMove(event: MouseEvent) {
     y: componentDragState.startPosition.y + deltaY
   };
   
-  // 限制在屏幕范围内
   newPosition.x = Math.max(0, Math.min(newPosition.x, window.innerWidth - componentDragState.draggedComponent.size.width));
   newPosition.y = Math.max(0, Math.min(newPosition.y, window.innerHeight - componentDragState.draggedComponent.size.height));
   
@@ -392,7 +372,6 @@ function handleComponentDragEnd() {
   document.removeEventListener('mouseup', handleComponentDragEnd);
 }
 
-// 加载系统组件模块
 async function loadSystemComponentModules() {
   const modules = import.meta.glob('../../system-components/*/*.vue', { eager: true });
   
@@ -418,7 +397,8 @@ async function loadSystemComponentModules() {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  z-index: 1; /* 确保桌面内容在壁纸上方 */
+  z-index: 1;
+  font-family: 'SmileySans-Oblique';
 }
 
 .wallpaper-animation {
@@ -429,7 +409,7 @@ async function loadSystemComponentModules() {
 
 .desktop-grid {
   position: relative;
-  z-index: 10; /* 确保桌面图标在最上方 */
+  z-index: 10; 
 }
 
 .desktop-icon {

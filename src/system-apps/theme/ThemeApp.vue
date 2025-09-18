@@ -4,7 +4,7 @@
       <h2>主题设置</h2>
       <p>选择您喜欢的主题外观</p>
       <div class="config-info">
-        <span class="info-badge">💡 提示</span>
+        <span class="info-badge">提示</span>
         <span>您可以在 <code>src/config/user-config.ts</code> 文件中添加自定义主题</span>
       </div>
     </div>
@@ -37,46 +37,6 @@
           </div>
         </div>
       </div>
-
-      <div class="theme-section">
-        <h3>窗口效果</h3>
-        <div class="settings-grid">
-          <div class="setting-item">
-            <label>
-              <input
-                type="checkbox"
-                v-model="enableShadow"
-                @change="updateShadow"
-              />
-              <span>窗口阴影</span>
-            </label>
-          </div>
-          <div class="setting-item">
-            <label>
-              <input
-                type="checkbox"
-                v-model="enableGlass"
-                @change="updateGlass"
-              />
-              <span>毛玻璃效果</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="theme-section">
-        <h3>动画设置</h3>
-        <div class="animation-controls">
-          <div class="control-group">
-            <label>动画速度</label>
-            <select v-model="animationSpeed" @change="updateAnimationSpeed">
-              <option value="fast">快速 (0.15s)</option>
-              <option value="normal">正常 (0.3s)</option>
-              <option value="slow">慢速 (0.5s)</option>
-            </select>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -105,60 +65,17 @@ function getThemeDescription(themeId: string): string {
   return descriptions[themeId] || '自定义主题';
 }
 
-const currentTheme = computed(() => system.theme);
-const enableShadow = ref(system.config.enableWindowShadow);
-const enableGlass = ref(system.config.enableGlassEffect);
-const animationSpeed = ref('normal');
-
+const currentTheme = ref(system.theme);
 onMounted(() => {
-  // 根据当前动画持续时间设置速度
-  const duration = 1;
-
+  currentTheme.value = system.theme;
 });
 
 function selectTheme(themeId: string) {
+  currentTheme.value = themeId;
   system.setTheme(themeId);
-  
-  // 根据主题特性自动调整效果
-  const theme = system.themes.find(t => t.id === themeId);
-  if (theme?.effects?.windowBlur) {
-    enableGlass.value = true;
-    updateGlass();
-  }
 }
 
-function updateShadow() {
-  system.config.enableWindowShadow = enableShadow.value;
-  // 触发重新渲染窗口阴影
-  document.documentElement.style.setProperty(
-    '--enable-window-shadow',
-    enableShadow.value ? '1' : '0'
-  );
-}
 
-function updateGlass() {
-  system.config.enableGlassEffect = enableGlass.value;
-  // 触发重新渲染毛玻璃效果
-  document.documentElement.style.setProperty(
-    '--enable-glass-effect',
-    enableGlass.value ? '1' : '0'
-  );
-}
-
-function updateAnimationSpeed() {
-  const speeds = {
-    fast: '0.15s',
-    normal: '0.3s',
-    slow: '0.5s'
-  };
-  
-  const duration = speeds[animationSpeed.value as keyof typeof speeds];
-  
-  // 更新系统动画配置
-  const easing = 'cubic-bezier(0.25, 0.8, 0.25, 1)';
-  // 更新CSS变量
-  document.documentElement.style.setProperty('--animation-duration', duration);
-}
 
 function getThemePreviewStyle(themeId: string) {
   const theme = system.themes.find(t => t.id === themeId);

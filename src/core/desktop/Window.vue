@@ -1,7 +1,4 @@
 <template>
-  <div>
-    
-  </div>
   <Transition 
     name="window"
     appear
@@ -113,6 +110,7 @@
 }
 
 .window-title {
+  font-family: 'SmileySans-Oblique';
   display: flex;
   align-items: center;
   gap: 8px;

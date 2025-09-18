@@ -39,7 +39,6 @@ class StorageService {
     }
   }
 
-  // localStorage操作封装
   private ls = {
     get: (key: string): any => {
       try {
@@ -64,7 +63,6 @@ class StorageService {
     },
   };
 
-  // IndexedDB操作封装
   private async idb(storeName: 'appData' | 'systemSettings') {
     if (!this.db) {
       await this.initDB();
@@ -90,7 +88,6 @@ class StorageService {
     };
   }
 
-  // 公共API - 默认使用IndexedDB确保数据持久化
   async get(key: string, useIDB = true): Promise<any> {
     if (useIDB) {
       const idb = await this.idb('appData');
@@ -126,7 +123,6 @@ class StorageService {
     }
   }
 
-  // 系统设置专用方法
   async getSystemSetting(key: string): Promise<any> {
     const idb = await this.idb('systemSettings');
     return await idb.get(key);
@@ -137,7 +133,6 @@ class StorageService {
     await idb.set(key, value);
   }
 
-  // 应用设置专用方法
   async getAppSetting(appId: string, key: string): Promise<any> {
     const idb = await this.idb('appData');
     return await idb.get(`${appId}:${key}`);

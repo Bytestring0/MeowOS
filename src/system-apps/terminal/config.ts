@@ -13,7 +13,7 @@ export interface TerminalCommand {
   aliases?: string[];
   category: 'system' | 'file' | 'app' | 'network' | 'fun' | 'info';
   handler: (args: string[], terminal: any) => Promise<void> | void;
-  hidden?: boolean; // 隐藏命令，不在help中显示
+  hidden?: boolean; 
 }
 
 export interface TerminalConfig {
@@ -24,9 +24,7 @@ export interface TerminalConfig {
   cursor: string;
 }
 
-// 基础命令
 const baseCommands: TerminalCommand[] = [
-  // 系统命令
   {
     name: 'help',
     description: '显示帮助信息',
@@ -142,37 +140,9 @@ const baseCommands: TerminalCommand[] = [
         });
         terminal.output('');
       } else if (target === 'documents' || target === 'docs') {
-        // 列出文档文件
-        try {
-          const docs = await terminal.getDocuments();
-          terminal.output('\n文档文件：\n');
-
-          // 按分类组织文档
-          const categories = new Map<string, any[]>();
-          docs.forEach((doc: any) => {
-            const category = doc.category || '其他';
-            if (!categories.has(category)) {
-              categories.set(category, []);
-            }
-            categories.get(category)!.push(doc);
-          });
-
-          // 输出分类文档
-          categories.forEach((files, category) => {
-            terminal.output(`\n  ${category}:`);
-            files.forEach(file => {
-              terminal.output(`    ${file.name}`);
-            });
-          });
-
-          terminal.output('');
-        } catch (error) {
-          terminal.error('无法获取文档列表: ' + error);
-        }
-      } else {
-        terminal.error(`目录 '${target}' 不存在`);
-      }
-    },
+        terminal.output('暂未实现\n');
+    }
+  }
   },
 
   {
@@ -473,13 +443,11 @@ const baseCommands: TerminalCommand[] = [
       const response = await ApiFetch.getFortune(args[0], args[1]);
       const result = await response.json();
       if (result?.code == 200) {
-        // 生成状态条
         function makeStatusBar(score: number, total = 5): string {
           const n = Math.max(0, Math.min(Math.floor(score), total));
           return '■'.repeat(n) + '□'.repeat(total - n);
         }
 
-        // 定义各项显示标题
         const titles: Record<string, string> = {
           all: '当前运势：总体',
           health: '健康',
@@ -487,8 +455,6 @@ const baseCommands: TerminalCommand[] = [
           money: '财运',
           work: '工作',
         };
-
-        // 从 JSON 中提取数据
         const fortune = result.data.fortune;
         const fortunetext = result.data.fortunetext;
         const todo = result.data.todo;
@@ -600,7 +566,7 @@ const baseCommands: TerminalCommand[] = [
   },
 ];
 
-// 默认终端配置
+
 export const defaultTerminalConfig: TerminalConfig = {
   prompt: 'user@meowos:~$',
   welcome: `

@@ -1,71 +1,46 @@
 <template>
-  <div 
-    class="search-component"
-    :class="{ 
-      expanded: isExpanded,
-      'settings-open': showSettings,
-      dragging: isDragging
-    }"
-    :style="componentStyle"
-  >
+  <div class="search-component" :class="{
+    expanded: isExpanded,
+    'settings-open': showSettings,
+    dragging: isDragging
+  }" :style="componentStyle">
     <!-- 搜索图标按钮 -->
-    <div 
-      class="search-icon"
-      :class="{ moved: isExpanded }"
-      @mousedown="startDrag"
-      @click="handleIconClick"
-    >
+    <div class="search-icon" :class="{ moved: isExpanded }" @mousedown="startDrag" @click="handleIconClick">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </div>
 
     <!-- 搜索框容器 -->
     <div class="search-container" :class="{ visible: isExpanded }">
       <div class="search-input-wrapper">
-        <input
-          ref="searchInput"
-          v-model="searchQuery"
-          type="text"
-          :placeholder="`使用 ${getCurrentEngineName()} 搜索...`"
-          class="search-input"
-          @keyup.enter="performSearch"
-          @input="onSearchInput"
-        />
-        <button 
-          class="search-submit"
-          @click="performSearch"
-          :disabled="!searchQuery.trim()"
-        >
+        <input ref="searchInput" v-model="searchQuery" type="text" :placeholder="`使用 ${getCurrentEngineName()} 搜索...`"
+          class="search-input" @keyup.enter="performSearch" @input="onSearchInput" />
+        <button class="search-submit" @click="performSearch" :disabled="!searchQuery.trim()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
         </button>
       </div>
 
       <!-- 搜索建议 -->
       <div v-if="suggestions.length > 0 && isExpanded" class="suggestions">
-        <div 
-          v-for="(suggestion, index) in suggestions"
-          :key="index"
-          class="suggestion-item"
-          @click="selectSuggestion(suggestion)"
-        >
+        <div v-for="(suggestion, index) in suggestions" :key="index" class="suggestion-item"
+          @click="selectSuggestion(suggestion)">
           {{ suggestion }}
         </div>
       </div>
     </div>
 
     <!-- 设置按钮 -->
-    <div 
-      class="settings-trigger"
-      :class="{ visible: isExpanded }"
-      @click="toggleSettings"
-    >
+    <div class="settings-trigger" :class="{ visible: isExpanded }" @click="toggleSettings">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
-        <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24" stroke="currentColor" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+        <path
+          d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"
+          stroke="currentColor" stroke-width="2" />
       </svg>
     </div>
 
@@ -73,15 +48,10 @@
     <div class="settings-panel" :class="{ visible: showSettings }">
       <div class="settings-content">
         <h3>搜索引擎</h3>
-        
+
         <div class="engine-list">
-          <div 
-            v-for="engine in searchEngines"
-            :key="engine.id"
-            class="engine-item"
-            :class="{ active: engine.id === currentEngine }"
-            @click="setSearchEngine(engine.id)"
-          >
+          <div v-for="engine in searchEngines" :key="engine.id" class="engine-item"
+            :class="{ active: engine.id === currentEngine }" @click="setSearchEngine(engine.id)">
             <div class="engine-indicator"></div>
             <span class="engine-name">{{ engine.name }}</span>
           </div>
@@ -89,21 +59,13 @@
 
         <div class="settings-options">
           <label class="checkbox-label">
-            <input 
-              type="checkbox" 
-              v-model="settings.openInNewTab"
-              @change="saveSettings"
-            />
+            <input type="checkbox" v-model="settings.openInNewTab" @change="saveSettings" />
             <span class="checkmark"></span>
             新标签页打开
           </label>
-          
+
           <label class="checkbox-label">
-            <input 
-              type="checkbox" 
-              v-model="settings.showSuggestions"
-              @change="saveSettings"
-            />
+            <input type="checkbox" v-model="settings.showSuggestions" @change="saveSettings" />
             <span class="checkmark"></span>
             显示搜索建议
           </label>
@@ -146,15 +108,15 @@ const dragOffset = ref({ x: 0, y: 0 });
 // 搜索引擎配置
 const searchEngines = ref([
   {
-    id: 'google',
-    name: 'Google',
-    url: 'https://www.google.com/search?q={query}'
-  },
-  {
     id: 'bing',
     name: 'Bing',
     url: 'https://www.bing.com/search?q={query}'
-  },
+  }, {
+    id: 'google',
+    name: 'Google',
+    url: 'https://www.google.com/search?q={query}'
+  }
+  ,
   {
     id: 'baidu',
     name: '百度',
@@ -190,14 +152,14 @@ const componentStyle = computed(() => {
 // 方法
 const getCurrentEngineName = () => {
   const engine = searchEngines.value.find(e => e.id === currentEngine.value);
-  return engine?.name || 'Google';
+  return engine?.name || 'Bing';
 };
 
 // 方法
 const toggleExpanded = async () => {
   isExpanded.value = !isExpanded.value;
   showSettings.value = false;
-  
+
   if (isExpanded.value) {
     await nextTick();
     searchInput.value?.focus();
@@ -208,14 +170,12 @@ const toggleExpanded = async () => {
 };
 
 const handleIconClick = (event: MouseEvent) => {
-  // 防止拖拽时触发点击
   if (isDragging.value) {
     event.preventDefault();
     event.stopPropagation();
     return;
   }
-  
-  // 如果已经展开，点击图标收回
+
   if (isExpanded.value) {
     toggleExpanded();
   }
@@ -242,7 +202,7 @@ const performSearch = () => {
   const engine = searchEngines.value.find(e => e.id === currentEngine.value);
   if (engine) {
     const searchUrl = engine.url.replace('{query}', encodeURIComponent(query));
-    
+
     if (settings.openInNewTab) {
       window.open(searchUrl, '_blank', 'noopener,noreferrer');
     } else {
@@ -250,7 +210,6 @@ const performSearch = () => {
     }
   }
 
-  // 清除搜索框和建议
   searchQuery.value = '';
   suggestions.value = [];
 };
@@ -271,7 +230,6 @@ const onSearchInput = () => {
     return;
   }
 
-  // 从搜索历史中生成建议
   const query = searchQuery.value.toLowerCase();
   suggestions.value = searchHistory.value
     .filter(item => item.toLowerCase().includes(query) && item !== searchQuery.value)
@@ -286,15 +244,15 @@ const clearHistory = () => {
 
 // 拖拽功能
 const startDrag = (event: MouseEvent) => {
-  if (isExpanded.value) return; // 展开时不允许拖拽
-  
+  if (isExpanded.value) return;
+
   const startX = event.clientX;
   const startY = event.clientY;
   const startTime = Date.now();
-  
+
   event.preventDefault();
   event.stopPropagation();
-  
+
   dragOffset.value = {
     x: event.clientX - settings.position.x,
     y: event.clientY - settings.position.y
@@ -305,23 +263,22 @@ const startDrag = (event: MouseEvent) => {
   const handleMouseMove = (e: MouseEvent) => {
     const deltaX = Math.abs(e.clientX - startX);
     const deltaY = Math.abs(e.clientY - startY);
-    
-    // 只有移动超过阈值才开始拖拽
+
     if (deltaX > 5 || deltaY > 5) {
       hasMoved = true;
       isDragging.value = true;
     }
-    
+
     if (isDragging.value) {
       e.preventDefault();
-      
+
       const newX = e.clientX - dragOffset.value.x;
       const newY = e.clientY - dragOffset.value.y;
-      
+
       // 限制在屏幕范围内
       const maxX = window.innerWidth - 60;
       const maxY = window.innerHeight - 60;
-      
+
       settings.position.x = Math.max(0, Math.min(newX, maxX));
       settings.position.y = Math.max(0, Math.min(newY, maxY));
     }
@@ -330,22 +287,20 @@ const startDrag = (event: MouseEvent) => {
   const handleMouseUp = (e: MouseEvent) => {
     const endTime = Date.now();
     const deltaTime = endTime - startTime;
-    
+
     if (isDragging.value) {
       isDragging.value = false;
       saveSettings();
     }
-    
-    // 如果没有移动且时间很短，且未展开，认为是点击展开
+
     if (!hasMoved && deltaTime < 200 && !isExpanded.value) {
       setTimeout(() => toggleExpanded(), 0);
     }
-    
-    // 重置拖拽状态
+
     setTimeout(() => {
       isDragging.value = false;
     }, 50);
-    
+
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
   };
@@ -354,7 +309,7 @@ const startDrag = (event: MouseEvent) => {
   document.addEventListener('mouseup', handleMouseUp);
 };
 
-// 存储管理
+
 const saveSettings = async () => {
   try {
     await storage.set('search-component-settings', {
@@ -383,8 +338,7 @@ const loadSettings = async () => {
 // 生命周期
 onMounted(() => {
   loadSettings();
-  
-  // 点击外部关闭面板
+
   const handleClickOutside = (event: MouseEvent) => {
     if (isExpanded.value) {
       const target = event.target as HTMLElement;
@@ -396,16 +350,14 @@ onMounted(() => {
       }
     }
   };
-  
+
   document.addEventListener('click', handleClickOutside);
-  
-  // 组件销毁时移除监听器
+
   return () => {
     document.removeEventListener('click', handleClickOutside);
   };
 });
 
-// 监听设置变化自动保存
 watch([currentEngine, searchHistory, settings], () => {
   saveSettings();
 }, { deep: true });
@@ -464,9 +416,17 @@ watch([currentEngine, searchHistory, settings], () => {
 }
 
 @keyframes iconBounce {
-  0% { transform: translateX(0) scale(1); }
-  50% { transform: translateX(300px) scale(1.1) rotate(10deg); }
-  100% { transform: translateX(280px) scale(0.9); }
+  0% {
+    transform: translateX(0) scale(1);
+  }
+
+  50% {
+    transform: translateX(300px) scale(1.1) rotate(10deg);
+  }
+
+  100% {
+    transform: translateX(280px) scale(0.9);
+  }
 }
 
 /* 搜索容器 */
@@ -478,7 +438,7 @@ watch([currentEngine, searchHistory, settings], () => {
   width: 280px;
   background: var(--bg-color, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 25px;
   overflow: hidden;
   transform: scaleX(0);
@@ -493,15 +453,17 @@ watch([currentEngine, searchHistory, settings], () => {
 }
 
 @keyframes containerSlide {
-  0% { 
+  0% {
     transform: scaleX(0) translateX(-20px);
     opacity: 0;
   }
-  50% { 
+
+  50% {
     transform: scaleX(1.05) translateX(0);
     opacity: 0.8;
   }
-  100% { 
+
+  100% {
     transform: scaleX(1) translateX(0);
     opacity: 1;
   }
@@ -571,14 +533,15 @@ watch([currentEngine, searchHistory, settings], () => {
   width: 280px;
   background: var(--bg-color, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 15px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   max-height: 200px;
   overflow-y: auto;
   z-index: 9;
   animation: suggestionsSlide 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  pointer-events: auto; /* 建议框始终可点击 */
+  pointer-events: auto;
+  /* 建议框始终可点击 */
 }
 
 @keyframes suggestionsSlide {
@@ -586,6 +549,7 @@ watch([currentEngine, searchHistory, settings], () => {
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -597,7 +561,7 @@ watch([currentEngine, searchHistory, settings], () => {
   cursor: pointer;
   font-size: 14px;
   color: var(--text-primary, #333);
-  border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.05));
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
   transition: all 0.2s ease;
 }
 
@@ -619,7 +583,7 @@ watch([currentEngine, searchHistory, settings], () => {
   height: 40px;
   background: var(--bg-color, rgba(255, 255, 255, 0.9));
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -630,7 +594,8 @@ watch([currentEngine, searchHistory, settings], () => {
   transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   color: var(--text-secondary, #666);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  pointer-events: none; /* 默认不可点击 */
+  pointer-events: none;
+  /* 默认不可点击 */
 }
 
 .settings-trigger.visible {
@@ -638,13 +603,22 @@ watch([currentEngine, searchHistory, settings], () => {
   opacity: 1;
   transition-delay: 0.3s;
   animation: settingsBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s;
-  pointer-events: auto; /* 可见时可点击 */
+  pointer-events: auto;
+  /* 可见时可点击 */
 }
 
 @keyframes settingsBounce {
-  0% { transform: translateY(-20px) scale(0.8); }
-  50% { transform: translateY(-5px) scale(1.1); }
-  100% { transform: translateY(0) scale(1); }
+  0% {
+    transform: translateY(-20px) scale(0.8);
+  }
+
+  50% {
+    transform: translateY(-5px) scale(1.1);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 .settings-trigger:hover {
@@ -662,20 +636,22 @@ watch([currentEngine, searchHistory, settings], () => {
   width: 260px;
   background: var(--bg-color, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 15px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   transform: translateY(-20px) scale(0.9);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   z-index: 8;
-  pointer-events: none; /* 默认不可点击 */
+  pointer-events: none;
+  /* 默认不可点击 */
 }
 
 .settings-panel.visible {
   transform: translateY(0) scale(1);
   opacity: 1;
-  pointer-events: auto; /* 可见时可点击 */
+  pointer-events: auto;
+  /* 可见时可点击 */
   animation: panelSlide 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -684,9 +660,11 @@ watch([currentEngine, searchHistory, settings], () => {
     opacity: 0;
     transform: translateY(-30px) scale(0.8);
   }
+
   50% {
     transform: translateY(5px) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -783,12 +761,12 @@ watch([currentEngine, searchHistory, settings], () => {
   transition: all 0.2s ease;
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark {
+.checkbox-label input[type="checkbox"]:checked+.checkmark {
   background: var(--accent-color, #4A90E2);
   border-color: var(--accent-color, #4A90E2);
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+.checkbox-label input[type="checkbox"]:checked+.checkmark::after {
   content: '';
   position: absolute;
   top: 2px;
@@ -802,7 +780,7 @@ watch([currentEngine, searchHistory, settings], () => {
 
 /* 历史记录部分 */
 .history-section {
-  border-top: 1px solid var(--border-color, rgba(0,0,0,0.1));
+  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   padding-top: 16px;
 }
 
@@ -837,19 +815,19 @@ watch([currentEngine, searchHistory, settings], () => {
   .search-component.expanded {
     width: 300px;
   }
-  
+
   .search-container {
     width: 230px;
   }
-  
+
   .search-icon.moved {
     transform: translateX(230px);
   }
-  
+
   .suggestions {
     width: 230px;
   }
-  
+
   .settings-panel {
     width: 220px;
   }
